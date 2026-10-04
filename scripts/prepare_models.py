@@ -2,6 +2,7 @@
 import concurrent.futures
 import hashlib
 from pathlib import Path
+import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,8 +37,13 @@ def fetch(item):
     else:
         partial = target.with_suffix(target.suffix + '.part')
         url = f'https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF/resolve/{REV}/{name}'
-        subprocess.run(['curl', '--fail', '--location', '--retry', '6', '--connect-timeout', '20',
-                        '--continue-at', '-', '--output', str(partial), url], check=True)
+        if shutil.which('curl'):
+            command = ['curl', '--fail', '--location', '--retry', '6', '--connect-timeout', '20',
+                       '--continue-at', '-', '--output', str(partial), url]
+        else:  # The 3x3090 host has wget but no curl; both resume the partial file.
+            command = ['wget', '--continue', '--tries=6', '--timeout=20', '--progress=dot:giga',
+                       '--output-document', str(partial), url]
+        subprocess.run(command, check=True)
         verify(partial, size, digest)
         partial.rename(target)
     print('Verified', target.name, flush=True)
