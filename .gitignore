@@ -10,6 +10,7 @@
 !/scripts/
 !/profiles/
 !/patches/
+!/systemd/
 !/Dockerfile
 !/Dockerfile.owner-api
 !/Dockerfile.eval

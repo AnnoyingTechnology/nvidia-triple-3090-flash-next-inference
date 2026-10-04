@@ -1,0 +1,36 @@
+# Qwen3.8-Flash-Next on the 3x RTX 3090 host: pinned Strata, GSQ IQ3_S, two-stage layer split on
+# GPUs 1+2, resident BF16 vision on GPU 0, loopback API on 127.0.0.1:19623 (SSH tunnel for clients).
+# Mutually exclusive with the Qwen3.8-27B vLLM service, which needs the same GPUs and host RAM.
+# Rendered by scripts/install_services.sh (@ROOT@ = this checkout, @USER@ = its owner).
+[Unit]
+Description=Qwen3.8-Flash-Next (Strata, GPUs 1+2 split, vision GPU 0) on 127.0.0.1:19623
+After=network-online.target nvidia-power-limit.service qwen-3.8-27b.service
+Wants=network-online.target nvidia-power-limit.service
+Conflicts=qwen-3.8-27b.service
+StartLimitIntervalSec=900
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=@USER@
+Group=@USER@
+WorkingDirectory=@ROOT@/upstream/strata
+Environment=HOME=@HOME@
+Environment=PATH=@ROOT@/upstream/strata/.venv/bin:/usr/bin:/bin
+Environment=PYTHONUNBUFFERED=1
+Environment=ULMUS_ROOT=@ROOT@
+Environment=ULMUS_MEMORY_MAX=88G
+ExecStartPre=/usr/bin/python3 @ROOT@/scripts/x3090_runtime.py x3090-iq3s-256k-gpu12-vision0
+ExecStartPre=/usr/bin/python3 @ROOT@/launch_record.py x3090-iq3s-256k-gpu12-vision0 native
+ExecStart=@ROOT@/upstream/strata/.venv/bin/python -m serve.server --engine strata --config @ROOT@/results/runtime/x3090-iq3s-256k-gpu12-vision0.json --port 19623
+# The expert arena is pinned and the n-gram table mlocked; nothing of the engine may swap.
+LimitMEMLOCK=infinity
+MemoryMax=88G
+MemorySwapMax=0
+KillMode=control-group
+TimeoutStopSec=90
+Restart=on-failure
+RestartSec=20
+
+[Install]
+WantedBy=multi-user.target

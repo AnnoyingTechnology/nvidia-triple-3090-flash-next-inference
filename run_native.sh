@@ -11,8 +11,8 @@ task_owner=$(stat -c %U "$task_root")
 [[ "$task_profile" =~ ^x3090-[a-z0-9-]+$ ]] || { echo 'expected an x3090-* profile' >&2; exit 2; }
 test -f "$task_root/profiles/$task_profile.json"
 test "$(id -u)" = 0 || { echo 'run as root (memlock)' >&2; exit 1; }
-# Refuse resource collisions: the 27B vLLM service, our own unit, or any foreign compute process.
-for task_other in qwen-serving.service "$task_unit.service"; do
+# Refuse resource collisions: either model service, our own unit, or any foreign compute process.
+for task_other in qwen-3.8-27b.service qwen3.8-flash-next.service "$task_unit.service"; do
     if systemctl is-active --quiet "$task_other"; then
         echo "$task_other is active; stop it first" >&2
         exit 1

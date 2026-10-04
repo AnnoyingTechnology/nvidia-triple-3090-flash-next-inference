@@ -1,0 +1,44 @@
+# Qwen3.8-27B abliterated vLLM API (nvidia-dual-3090-llm-inference profile) on GPUs 1+2, LAN port 19622.
+# Same settings as the previous qwen-serving.service, renamed; mutually exclusive with Flash-Next.
+# Rendered by scripts/install_services.sh (@SERVING@ = the qwen-serving checkout, @USER@ = its owner).
+[Unit]
+Description=Qwen3.8-27B abliterated vLLM API on GPUs 1 and 2 (port 19622)
+After=network-online.target
+Wants=network-online.target nvidia-power-limit.service
+Conflicts=qwen3.8-flash-next.service
+StartLimitIntervalSec=900
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=@USER@
+Group=@USER@
+WorkingDirectory=@SERVING@
+Environment=HOME=@HOME@
+Environment=CUDA_VISIBLE_DEVICES=1,2
+Environment=MODEL=@SERVING@/models/Huihui-Qwen3.8-27B-Abliterated-W4A16-AutoRound
+Environment=DRAFT=@SERVING@/models/Qwen3.8-27B-DFlash2-W4A16
+Environment=HOST=0.0.0.0
+Environment=PORT=19622
+Environment=SPEC=dflash2
+Environment=CTX=fast
+Environment=DFLASH_TOKENS=7
+Environment=DFLASH_MAX_LEN=262144
+Environment=MAX_SEQS=4
+Environment=PREFIX_CACHE=1
+Environment=VISION=1
+Environment=VISION_OFFLOAD=1
+Environment=GPU_UTIL=0.93
+Environment="EXTRA_ARGS=--tensor-parallel-size 2 --served-model-name qwen3.8-27b-abliterated"
+ExecStart=/bin/bash @SERVING@/single-user/start_qwen.sh
+# Restart even after a clean exit: on 2026-09-10 vLLM exited 0 after an engine shutdown and
+# stayed down 6 h under Restart=on-failure.
+Restart=always
+RestartSec=20
+TimeoutStopSec=120
+KillMode=control-group
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
