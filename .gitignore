@@ -24,6 +24,9 @@
 !/QUALITY-REFERENCE.json
 !/run.sh
 !/stop.sh
+!/run_native.sh
+!/stop_native.sh
+!/CHECKPOINT.md
 !/launch_record.py
 !/wait_ready.py
 !/bench.py

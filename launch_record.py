@@ -13,10 +13,19 @@ name, image = sys.argv[1:]
 path = root / 'profiles' / (name + '.json')
 cfg = json.loads(path.read_text())
 stamp = datetime.datetime.now(datetime.timezone.utc)
+
+
+def native_identity():
+    # The 3x3090 host runs native builds, not images: identify the engine and vision binaries.
+    names = [cfg['exe']] + ([cfg['vision']['exe']] if cfg.get('vision') else [])
+    base = root / 'upstream' / 'strata'
+    return {name: hashlib.sha256((base / name).read_bytes()).hexdigest() for name in names}
+
 shared_path = path.with_suffix('.shared-settings.json')
 record = {'observed_at': stamp.isoformat(), 'profile': name, 'profile_sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
-          'image': image, 'image_id': subprocess.check_output([
+          'image': image, 'image_id': native_identity() if image == 'native' else subprocess.check_output([
               'docker', 'image', 'inspect', image, '--format', '{{.Id}}'], text=True).strip(),
+          'memory_max': os.environ.get('ULMUS_MEMORY_MAX'),
           'engine_args': cfg['args'], 'vision': cfg.get('vision'),
           'sampling': cfg.get('sampling'),
           'shared_defaults': json.loads(shared_path.read_text()) if shared_path.exists() else None,
