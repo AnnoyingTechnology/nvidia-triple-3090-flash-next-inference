@@ -1,4 +1,48 @@
-# NVIDIA RTX 4090 Flash-Next inference
+# Flash-Next on 3x RTX 3090 + i7-6900K
+
+This repository qualifies **Qwen3.8-Flash-Next on three 24 GiB RTX 3090s, an i7-6900K (8 cores,
+AVX2, quad-channel DDR4) and 94 GiB of usable RAM**, using the same target, workloads and
+acceptance rules as the frozen single-RTX 4090 campaign ("Ulmus") recorded below. The engine is
+pinned [Strata](https://github.com/Niko1221/Strata) `99f3dbd`, built natively for SM86 with CUDA
+12.4. All experts and the IQ4_NL n-gram table stay in RAM (pinned / mlocked); no disk decode tier.
+Every card runs at **225 W** (owner policy).
+
+**Status, 2026-10-04: active R&D checkpoint.** Current state, pins and rollback:
+[CHECKPOINT.md](CHECKPOINT.md).
+
+**Selected placement:** profile `x3090-iq3s-256k-gpu12-vision0` - a two-stage layer split over
+the two x16 cards (GPU1 layers 0-24, GPU2 layers 25-47 + head + MTP), the BF16 vision encoder
+resident alone on the x8 card (GPU0). The split's caches hold 17,557 of 24,576 experts, about
+99.1% of the routed mass, so decode no longer depends on the CPU or PCIe; it is bound by
+per-layer RTX 3090 GPU time (~0.52 ms/layer, ~26 ms per speculative window).
+
+Same 32K/128K requests as the Ulmus probe (document and per-request hashes identical), fixed
+512-token low-reasoning performance cells, medians of three, board power summed over all cards:
+
+| Placement | 32K decode | 128K decode | Cold read 32K / 114-130K | Power | J/token at 32K |
+|---|---:|---:|---:|---:|---:|
+| One card (GPU1), KV streaming past 32K | 72.6 tok/s | 65.6 tok/s | 14.9 / 63.9 s | 241 W | 3.3 |
+| **Two-stage split GPU1+GPU2 (selected)** | **93.7 tok/s** | **84.0 tok/s** | **12.4 / 35.5 s** | 363 W | 3.9 |
+| Three-stage split GPU1, GPU0, GPU2 | 93.1 tok/s | 86.6 tok/s | 15.5 / 44.5 s | 457 W | 4.9 |
+| Ulmus RTX 4090, selected profile (published) | 120.1 tok/s | 112.6 tok/s | 6.8 / 24.6 s | ~264 W | 2.2 |
+
+**Finding:** the owner's hypothesis - extra VRAM keeps the experts on GPUs and beats the single
+4090 - does not hold for decode at 225 W. Moving almost every expert onto the GPUs removes the
+CPU/PCIe dependence, but each Ampere layer is slower than Ada's, and the split adds no
+parallelism for one sequence. A third stage holds all experts yet cannot shorten the window;
+it slows prompt reading (x8 link, extra stage) and adds power, so it only hosts vision.
+The single card holds ~8,800 experts and leans on the AVX2 CPU pool over PCIe 3: 27% slower.
+Q4_K_XL cannot run here: Strata pins every expert in host RAM (~103 GiB on Ulmus) above 94 GiB.
+
+Quality qualification (practical30, vision15) and the 64K-256K anchors are in progress; see the
+checkpoint. Build and run on this host type: `scripts/build_native.sh`,
+`python3 scripts/prepare_models.py`, `scripts/prepare_packs_native.sh`, then as root
+`./run_native.sh x3090-iq3s-256k-gpu12-vision0`. Raw private captures are not published.
+
+---
+
+## Inherited Ulmus record (frozen RTX 4090 baseline)
+
 
 This repository records the optimization and bounded quality qualification of
 **Qwen3.8-Flash-Next on one 24 GiB RTX 4090, Ryzen 7900 and 192 GB RAM**.
