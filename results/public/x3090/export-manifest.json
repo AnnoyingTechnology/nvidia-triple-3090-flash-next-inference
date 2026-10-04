@@ -1,0 +1,62 @@
+{
+  "method": "Explicit allowlist; remove per-sample telemetry, local paths and private addresses",
+  "private_exclusions": [
+    "Engine/server logs",
+    "Host inventory",
+    "Downloaded binaries and model files"
+  ],
+  "sources": {
+    "native-components.json": {
+      "private_sha256": "f215481548205675dd4e2d1650b1bc5b122ed7de5960d95a1a233517eba9a39a",
+      "public_sha256": "f215481548205675dd4e2d1650b1bc5b122ed7de5960d95a1a233517eba9a39a"
+    },
+    "grader-controls-x3090.json": {
+      "private_sha256": "957532ce94eebab8d630f8bb294c029dbc6cf3a6da2d6c0151f2b9c373bd2752",
+      "public_sha256": "957532ce94eebab8d630f8bb294c029dbc6cf3a6da2d6c0151f2b9c373bd2752"
+    },
+    "api-check-smoke-20261004.json": {
+      "private_sha256": "ec18438b017a596cc00477fd1e1b2db42a30aa76bafdb0d669979101f17e0177",
+      "public_sha256": "26132543df7857d69965e0e703d7a0d76ea700fea879b1d3de200c3d6e1c75c3"
+    },
+    "api-check-gpu12-b-20261004.json": {
+      "private_sha256": "892d578134a067ee4618b11ff2516d903b073c71893ac3bfe3ff0cac254f49a5",
+      "public_sha256": "916ee84cb81b143cf491f7ca020d7b33b74ce11b1da48d8fafebfa4b8f14e577"
+    },
+    "api-check-gpu12-c-20261004.json": {
+      "private_sha256": "f4472ca8bb97c0f1197f349a02a45de2fce334790fe902dbda146fc492bd867c",
+      "public_sha256": "9cb336f9bc0cc34e63620a6042787c3fb76e9688b1e4407ade3ce8e442e6ef97"
+    },
+    "context-decode-gpu12-a-20261004.json": {
+      "private_sha256": "5868cb4eee71f0ed3618a7efb9f363deb427aab92e38d6700d2c0827dfc328f7",
+      "public_sha256": "34e1b99946894beffb8d6139fdd389e8a90266e4e0a6654390ad207ddda058cd"
+    },
+    "context-decode-gpu102-a-20261004.json": {
+      "private_sha256": "87873ad576479de6ff1d20c6d5ae7dc520bc12c3e015d25e4219d94dbd248625",
+      "public_sha256": "fc080b05c8241c636b87e5c49740662e4c4478845f78553137e31ea29ae618d5"
+    },
+    "context-decode-gpu1-a-20261004.json": {
+      "private_sha256": "771e75dffb500ca6bd03fcf338dea50fea8c596e6acbdc3e60a60ee2eba4cbd0",
+      "public_sha256": "b3a583a39175746270bfc41208ff1160406843e6e32284ca3f94e1b335ebe03c"
+    },
+    "context-decode-gpu12-c-20261004.json": {
+      "private_sha256": "38d603c96461c5f5f803930a3119afd4f25a9c673300fa8d64835c1df7decb5a",
+      "public_sha256": "54579a4e0bf37a517e02189b0d48c91f722532389dcb420ed684229f9270b65a"
+    },
+    "context-decode-gpu12-b-long-20261004.json": {
+      "private_sha256": "a7def54efb59d49a63014383d85affd008615522675dbdc511d05b0f4516d3df",
+      "public_sha256": "c0ace7ac1082384dacbd87a7319bc0916b8bb48a559cf423527d1dede14dff18"
+    },
+    "practical30-gpu12-low-s42.json": {
+      "private_sha256": "afa24db1ad651fe9ffe59350938783b3dc98fe24f784e036fed36e1a05f6b61d",
+      "public_sha256": "974c8314d189e0217b568e208645180525d277516c8a066bd89a4deb95a0b7e8"
+    },
+    "vision15-gpu12-low-20261004.json": {
+      "private_sha256": "282ccfb22c2d75eb9aa862dfbf34cfa95b0389fc1f8388d4ba7ee4f40ef6d9de",
+      "public_sha256": "b246934d92ce5fbd802e70e1cad1146b8ea131e3b41dd32678747ab1d3ec63d5"
+    },
+    "large-images-gpu12-b-20261004.json": {
+      "private_sha256": "4a7f2c67e1da240ebb0da846c6d87e25de0f798fd8329971425770a432b5978d",
+      "public_sha256": "4a7f2c67e1da240ebb0da846c6d87e25de0f798fd8329971425770a432b5978d"
+    }
+  }
+}

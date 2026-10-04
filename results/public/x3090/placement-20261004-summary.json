@@ -1,0 +1,281 @@
+{
+  "scope": "Fixed 512-token low-reasoning performance cells (not quality evidence); 225 W on every card. Power is board power summed over all three GPUs, including the idle vision/desktop card.",
+  "matched_with_ulmus": "32K/64K/128K documents and the 32K/128K request hashes equal the Ulmus adapt-batch ABBA cells (results/public/adapt-batch-20261004-summary.json).",
+  "probes": {
+    "gpu1-a": {
+      "label": "One card (GPU1), KV streaming past 32K",
+      "documents_sha256": {
+        "32": "c73c3d5f87937dec7e9b0afdd12fc8cb7911b6cd0e4d736a0195b58fb8469567",
+        "128": "22f55cfb5492c63423e5e26d7e06bd4f3e1a4b15d7ba9bfb864d3068313800fd"
+      },
+      "contexts": {
+        "32": {
+          "decode_tok_s": [
+            72.6,
+            74.7,
+            71.8
+          ],
+          "decode_median_tok_s": 72.6,
+          "first_read": {
+            "read_tokens": 31803,
+            "reused_tokens": 0,
+            "prompt_s": 14.94
+          },
+          "all_board_power_median_w": 241.0,
+          "acceptance": 0.7839,
+          "finish_reasons": [
+            "length"
+          ],
+          "input_sha256": [
+            "ec336be68dd06efc05ffff21a3852688aafb406c23717cedef27ae9ba1a8f6d0",
+            "1480092d7bc2812933c2b630c785b89ce6f871239824d8ca2e8d59455603e89f",
+            "eaed436f63574258959fd49ca72e899e63ac97db22bad40892a445f43db066be"
+          ]
+        },
+        "128": {
+          "decode_tok_s": [
+            68.7,
+            65.6,
+            63.4
+          ],
+          "decode_median_tok_s": 65.6,
+          "first_read": {
+            "read_tokens": 130107,
+            "reused_tokens": 0,
+            "prompt_s": 63.87
+          },
+          "all_board_power_median_w": 240.3,
+          "acceptance": 0.708,
+          "finish_reasons": [
+            "length"
+          ],
+          "input_sha256": [
+            "0c284e6152ea6e5b62fd459d1b5072ca150f5e250a49790d091753526bed8d3f",
+            "79d25ea63a6de5982732ddf4d1131ef578a7a0cd76128fdf3450177517318290",
+            "bc168ad04eb195cf6354bd95880377a784897ec70811a72140cbac88792ed254"
+          ]
+        }
+      }
+    },
+    "gpu12-a": {
+      "label": "Split GPU1+GPU2, launch a",
+      "documents_sha256": {
+        "32": "c73c3d5f87937dec7e9b0afdd12fc8cb7911b6cd0e4d736a0195b58fb8469567",
+        "128": "22f55cfb5492c63423e5e26d7e06bd4f3e1a4b15d7ba9bfb864d3068313800fd"
+      },
+      "contexts": {
+        "32": {
+          "decode_tok_s": [
+            93.7,
+            93.1,
+            94.1
+          ],
+          "decode_median_tok_s": 93.7,
+          "first_read": {
+            "read_tokens": 31803,
+            "reused_tokens": 0,
+            "prompt_s": 12.36
+          },
+          "all_board_power_median_w": 363.0,
+          "acceptance": 0.7597,
+          "finish_reasons": [
+            "length"
+          ],
+          "input_sha256": [
+            "ec336be68dd06efc05ffff21a3852688aafb406c23717cedef27ae9ba1a8f6d0",
+            "1480092d7bc2812933c2b630c785b89ce6f871239824d8ca2e8d59455603e89f",
+            "eaed436f63574258959fd49ca72e899e63ac97db22bad40892a445f43db066be"
+          ]
+        },
+        "128": {
+          "decode_tok_s": [
+            86.0,
+            84.0,
+            82.2
+          ],
+          "decode_median_tok_s": 84.0,
+          "first_read": {
+            "read_tokens": 113723,
+            "reused_tokens": 16384,
+            "prompt_s": 35.54
+          },
+          "all_board_power_median_w": 432.3,
+          "acceptance": 0.71,
+          "finish_reasons": [
+            "length"
+          ],
+          "input_sha256": [
+            "0c284e6152ea6e5b62fd459d1b5072ca150f5e250a49790d091753526bed8d3f",
+            "79d25ea63a6de5982732ddf4d1131ef578a7a0cd76128fdf3450177517318290",
+            "bc168ad04eb195cf6354bd95880377a784897ec70811a72140cbac88792ed254"
+          ]
+        }
+      }
+    },
+    "gpu12-c": {
+      "label": "Split GPU1+GPU2, launch c",
+      "documents_sha256": {
+        "32": "c73c3d5f87937dec7e9b0afdd12fc8cb7911b6cd0e4d736a0195b58fb8469567",
+        "128": "22f55cfb5492c63423e5e26d7e06bd4f3e1a4b15d7ba9bfb864d3068313800fd"
+      },
+      "contexts": {
+        "32": {
+          "decode_tok_s": [
+            91.0,
+            96.7,
+            95.4
+          ],
+          "decode_median_tok_s": 95.4,
+          "first_read": {
+            "read_tokens": 31803,
+            "reused_tokens": 0,
+            "prompt_s": 12.58
+          },
+          "all_board_power_median_w": 371.7,
+          "acceptance": 0.7771,
+          "finish_reasons": [
+            "length"
+          ],
+          "input_sha256": [
+            "ec336be68dd06efc05ffff21a3852688aafb406c23717cedef27ae9ba1a8f6d0",
+            "1480092d7bc2812933c2b630c785b89ce6f871239824d8ca2e8d59455603e89f",
+            "eaed436f63574258959fd49ca72e899e63ac97db22bad40892a445f43db066be"
+          ]
+        },
+        "128": {
+          "decode_tok_s": [
+            82.7,
+            83.2,
+            81.0
+          ],
+          "decode_median_tok_s": 82.7,
+          "first_read": {
+            "read_tokens": 113723,
+            "reused_tokens": 16384,
+            "prompt_s": 36.22
+          },
+          "all_board_power_median_w": 436.2,
+          "acceptance": 0.695,
+          "finish_reasons": [
+            "length"
+          ],
+          "input_sha256": [
+            "0c284e6152ea6e5b62fd459d1b5072ca150f5e250a49790d091753526bed8d3f",
+            "79d25ea63a6de5982732ddf4d1131ef578a7a0cd76128fdf3450177517318290",
+            "bc168ad04eb195cf6354bd95880377a784897ec70811a72140cbac88792ed254"
+          ]
+        }
+      }
+    },
+    "gpu102-a": {
+      "label": "Split GPU1, GPU0, GPU2",
+      "documents_sha256": {
+        "32": "c73c3d5f87937dec7e9b0afdd12fc8cb7911b6cd0e4d736a0195b58fb8469567",
+        "128": "22f55cfb5492c63423e5e26d7e06bd4f3e1a4b15d7ba9bfb864d3068313800fd"
+      },
+      "contexts": {
+        "32": {
+          "decode_tok_s": [
+            93.1,
+            95.4,
+            92.3
+          ],
+          "decode_median_tok_s": 93.1,
+          "first_read": {
+            "read_tokens": 31803,
+            "reused_tokens": 0,
+            "prompt_s": 15.45
+          },
+          "all_board_power_median_w": 456.6,
+          "acceptance": 0.7651,
+          "finish_reasons": [
+            "length"
+          ],
+          "input_sha256": [
+            "ec336be68dd06efc05ffff21a3852688aafb406c23717cedef27ae9ba1a8f6d0",
+            "1480092d7bc2812933c2b630c785b89ce6f871239824d8ca2e8d59455603e89f",
+            "eaed436f63574258959fd49ca72e899e63ac97db22bad40892a445f43db066be"
+          ]
+        },
+        "128": {
+          "decode_tok_s": [
+            81.2,
+            92.1,
+            86.6
+          ],
+          "decode_median_tok_s": 86.6,
+          "first_read": {
+            "read_tokens": 113723,
+            "reused_tokens": 16384,
+            "prompt_s": 44.53
+          },
+          "all_board_power_median_w": 484.9,
+          "acceptance": 0.7446,
+          "finish_reasons": [
+            "length"
+          ],
+          "input_sha256": [
+            "0c284e6152ea6e5b62fd459d1b5072ca150f5e250a49790d091753526bed8d3f",
+            "79d25ea63a6de5982732ddf4d1131ef578a7a0cd76128fdf3450177517318290",
+            "bc168ad04eb195cf6354bd95880377a784897ec70811a72140cbac88792ed254"
+          ]
+        }
+      }
+    },
+    "gpu12-b-long": {
+      "label": "Split GPU1+GPU2, launch b, 256K/64K anchors",
+      "documents_sha256": {
+        "64": "74f448aaf0bed170c60deecefe1bd7f400311574f83e64c30b205e0c5005b7ff",
+        "256": "901d670f2438ac5e2d9c4058ce59f00a80a9afdaedba2ec2d940bea806f77353"
+      },
+      "contexts": {
+        "64": {
+          "decode_tok_s": [
+            87.4,
+            89.6,
+            84.2
+          ],
+          "decode_median_tok_s": 87.4,
+          "first_read": {
+            "read_tokens": 48187,
+            "reused_tokens": 16384,
+            "prompt_s": 17.8
+          },
+          "all_board_power_median_w": 371.7,
+          "acceptance": 0.7241,
+          "finish_reasons": [
+            "length"
+          ],
+          "input_sha256": [
+            "fd55c034a290e327abfdbe05f968e2c1819097f5f36e3ce4f20b25bf2d75a05c",
+            "07ff36f86d428bfd5a83734afce25eb77ba35234a96754957378fc3c97acc452",
+            "31052642472e58a23a6298ec0d8fcd1ed1183d1b7a2ae8525236ca860893ba7e"
+          ]
+        },
+        "256": {
+          "decode_tok_s": [
+            77.6,
+            83.8,
+            72.7
+          ],
+          "decode_median_tok_s": 77.6,
+          "first_read": {
+            "read_tokens": 261179,
+            "reused_tokens": 0,
+            "prompt_s": 88.91
+          },
+          "all_board_power_median_w": 342.9,
+          "acceptance": 0.746,
+          "finish_reasons": [
+            "length"
+          ],
+          "input_sha256": [
+            "5c431461601d267881b377724bb531368d485f0b1b65a8476a562e444135f33b",
+            "e3160fe981d98c2996a3d2e2f8ed3f6c01923c7e9f7bec54d0a2ff776a25334e",
+            "cd14a9d2da78341ee943fc1e257f3441fb2259e4474d1869b92b84c048756a10"
+          ]
+        }
+      }
+    }
+  }
+}

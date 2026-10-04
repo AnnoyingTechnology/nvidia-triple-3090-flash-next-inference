@@ -1,0 +1,54 @@
+{
+  "correct_program": {
+    "pass": true,
+    "results": [
+      1,
+      1
+    ],
+    "tests": 2,
+    "metadata": {
+      "execution time": 0.00639796257019043
+    }
+  },
+  "public_only_program": {
+    "pass": false,
+    "results": [
+      1,
+      -2
+    ],
+    "tests": 2,
+    "metadata": {
+      "output": "5\n",
+      "inputs": "40 2\n",
+      "expected": "42\n",
+      "error_code": -2,
+      "error_message": "Wrong answer at output_line_idx=0: 5 != 42"
+    }
+  },
+  "correct_function": {
+    "pass": true,
+    "results": [
+      1,
+      1
+    ],
+    "tests": 2,
+    "metadata": {
+      "execution time": 1.430511474609375e-06
+    }
+  },
+  "public_only_function": {
+    "pass": false,
+    "results": [
+      1,
+      0
+    ],
+    "tests": 2,
+    "metadata": {
+      "output": "5",
+      "inputs": "[40, 2]",
+      "expected": "42",
+      "error_code": -2,
+      "error_message": "Wrong Answer"
+    }
+  }
+}

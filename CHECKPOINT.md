@@ -54,34 +54,58 @@ GPU0 (4096-token image budget).
 
 ## Measurements
 
-Matched with Ulmus: the 32K/128K decode probe documents and every request hash are identical to
-the Ulmus ABBA cells. Fixed 512-token performance cells, not quality evidence.
+Matched with Ulmus: the 32K/64K/128K probe documents and every 32K/128K request hash are identical
+to the Ulmus ABBA cells. Fixed 512-token performance cells, not quality evidence. Summary:
+`results/public/x3090/placement-20261004-summary.json`.
 
-| Profile (225 W) | 32K decode | 128K decode | 32K cold read | API |
+| Profile (225 W) | 32K decode | 128K decode | 32K cold read | Board power |
 |---|---:|---:|---:|---:|
-| Ulmus selected24, 4090 (published) | 120.10 | 112.55 | 6.81 s | 9/9 |
-| `gpu12-vision0`: split GPU1+GPU2, vision GPU0 | **93.7** | **84.0** | 12.36 s | 9/9 |
+| Ulmus selected24, 4090 (published) | 120.10 | 112.55 | 6.81 s | ~264 W |
+| `gpu12-vision0` split GPU1+GPU2, launches a / c | **93.7 / 95.4** | **84.0 / 82.7** | 12.4 / 12.6 s | ~365 W |
+| `gpu102-vision0` three stages | 93.1 | 86.6 | 15.5 s | ~457 W |
+| `gpu1-vision0` one card | 72.6 | 65.6 | 14.9 s | ~241 W |
 
-Medians of three cells. In the two-card split, the caches hold 17,557 of 24,576 experts
-(~99.1% of routed mass); decode is bound by per-layer Ampere GPU time (~0.52 ms/layer,
-~26 ms per window), not by CPU or PCIe. Both stage cards run at their power cap during decode
-(1.70-1.92 GHz). Loaded host RAM: cgroup 85.8 GiB current (~12.7 GiB of it reclaimable file
-cache), 50.1 GiB anon (pinned arena), 26.8 GiB mlocked PLE; host MemAvailable 12.4 GiB.
-Image smoke: correct content, new image 2.56 s to first token, cached 0.08 s.
+Selected profile anchors (launch b): 64K 87.4 tok/s, 256K 77.6 tok/s; cold 261,179-token read
+88.9 s; host MemAvailable >= 10.75 GiB at 256K. 96K/192K unmeasured (interpolated ~85 / ~80).
+
+Quality on the selected profile, low reasoning, all natural completions:
+practical30 seed 42 **29/30** (fails `path-route`; identical deck hash, valid isolated controls,
+median answer 9.04 s); vision15 **14/15** content and strict (fails `invoice`, as on Ulmus);
+maximum-budget images 3/3 (new 7.1 s first token: ~4.2 s encoder at the GPU0 power cap + 2.9 s
+prompt read); API 9/9 on three launches.
+
+Memory, loaded: ~50 GiB anon (pinned expert arena) + 26.8 GiB mlocked PLE + ~2.4-4 GiB shmem;
+host MemAvailable ~11-12 GiB (9.2 GiB with three engine GPUs). The unit's `MemoryMax=88G` is a
+coarse guard only: mlocked PLE pages stay charged to whichever cgroup first read them, so
+host-wide MemAvailable is the figure to watch.
 
 ## Decisions
 
+- **Selected:** `x3090-iq3s-256k-gpu12-vision0` (two-stage split on the x16 cards, vision on GPU0).
+- Rejected: three-stage split (no decode gain, ~25% slower prompt reading, +~90 W); one card
+  (27% slower decode, 1.8x slower 128K read; most efficient at 3.3 J/token).
 - Q4_K_XL is not viable here: Strata pins every expert in host RAM (Ulmus measured ~103 GiB for Q4),
   above this host's 94 GiB; a disk tier is excluded.
 - Peer tier needs P2P (absent); helper caches (`--expert-cache-device1..3`) are documented slower
   than the CPU pool. Layer split is the multi-GPU mode.
-- No power increase above 225 W (owner policy).
+- No power above 225 W (owner policy). CPU pool workers are not an energy lever (one busy core,
+  ~32 W package during a cold 256K read). GPU flag waits are single-thread kernels, not a
+  power drain.
+- Not pursued without new evidence: speculation/adaptation retuning (decode is per-layer GPU
+  bound; Ulmus short sweeps failed confirmation), c2, OpenCode integration (the Ulmus provider
+  entry must not be repointed implicitly).
 
-## Running now / next
+## Running now
 
-See the README's 3x3090 section for the current selection. Next: three-stage split A/B
-(prefill pipelining, full expert residency), then quality qualification (practical30 low,
-vision15 low) on the selected placement and sparse long-context anchors.
+Unit `flashnext-x3090` (transient; does not survive a reboot) serving the selected profile on
+loopback 19623, launch c. No job is running. The 27B vLLM service is stopped but enabled at boot.
+
+## Return handoff
+
+Result: the 3x3090 machine runs the same qualified IQ3_S target with vision at ~94 tok/s (32K),
+~83 (128K), ~78 (256K), practical30 29/30 and vision15 14/15 at low - usable, but ~22-26% slower
+in decode and ~1.4-1.8x slower to read long prompts than Ulmus, at ~1.8x the energy per token.
+It does not earn a role as a faster Flash-Next host; it is a capable second/fallback host.
 
 Rollback for the host: `stop_native.sh`, then `systemctl start qwen-serving.service` restores the
 27B vLLM API (about 2.5 minutes to answer).

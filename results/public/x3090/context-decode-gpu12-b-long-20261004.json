@@ -1,0 +1,464 @@
+{
+  "observed_at": "2026-10-04T13:42:17.471944+00:00",
+  "order": [
+    256,
+    256,
+    256,
+    64,
+    64,
+    64
+  ],
+  "sampling": {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0,
+    "presence_penalty": 0,
+    "repetition_penalty": 1,
+    "reasoning_effort": "low",
+    "seed": 42
+  },
+  "decode_tokens": 512,
+  "documents_sha256": {
+    "64": "74f448aaf0bed170c60deecefe1bd7f400311574f83e64c30b205e0c5005b7ff",
+    "256": "901d670f2438ac5e2d9c4058ce59f00a80a9afdaedba2ec2d940bea806f77353"
+  },
+  "runtime": {
+    "fingerprint": "034ca82cc483a977f4465c1ff0349b653006166ad5ce0538ce3c416b36d88a41",
+    "identity": {
+      "image_id": {
+        "native": "7ec9f59087aa8e6c009390a17a9976de924f2abb4c66b0d7973ffe9290aee250",
+        "vision": "fb1d356b9727db5b3ba71c13df52bdada803df9c38f99c703bff97515d558343"
+      },
+      "api_command": [
+        "<local-path>",
+        "-m",
+        "serve.server",
+        "--engine",
+        "strata",
+        "--config",
+        "<local-path>",
+        "--port",
+        "19623"
+      ],
+      "artifacts": {
+        "config_sha256": "f7496115f4663aa198aa67f1c9d465f6e499ecc624fc15d4bea1182133d07eef",
+        "engine_config": {
+          "exe": "<local-path>",
+          "args": [
+            "--pack",
+            "<local-path>",
+            "--native",
+            "<local-path>",
+            "--expert-profile",
+            "<local-path>",
+            "--expert-cache",
+            "auto",
+            "--ple-io",
+            "ram",
+            "--prefill",
+            "auto:32768",
+            "--spec",
+            "4",
+            "--spec-min-p",
+            "0.7",
+            "--mtp",
+            "<local-path>",
+            "--max-context",
+            "262144",
+            "--kv",
+            "int8",
+            "--pool-workers",
+            "7",
+            "--stats",
+            "--vision",
+            "--adapt-swaps",
+            "24"
+          ],
+          "cwd": "<local-path>",
+          "gpu": [
+            1,
+            2
+          ],
+          "layer_split": "auto",
+          "tokenizer": "<local-path>",
+          "model_name": "Qwen3.8-Flash-Next",
+          "log": "<local-path>",
+          "host": "127.0.0.1",
+          "port": 19623,
+          "aliases": [
+            "x3090",
+            "ulmus"
+          ],
+          "vision": {
+            "exe": "<local-path>",
+            "mmproj": "<local-path>",
+            "model": "<local-path>",
+            "gpu": true,
+            "max_tokens": 4096,
+            "threads": 8,
+            "cuda_device": 0
+          },
+          "sampling": {
+            "temperature": 1,
+            "top_p": 0.95,
+            "top_k": 20,
+            "min_p": 0,
+            "presence_penalty": 0,
+            "repetition_penalty": 1
+          }
+        },
+        "native_sha256": "7ec9f59087aa8e6c009390a17a9976de924f2abb4c66b0d7973ffe9290aee250",
+        "native_command": [
+          "<local-path>",
+          "--serve",
+          "--pack",
+          "<local-path>",
+          "--native",
+          "<local-path>",
+          "--expert-profile",
+          "<local-path>",
+          "--expert-cache",
+          "auto",
+          "--ple-io",
+          "ram",
+          "--prefill",
+          "auto:32768",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.7",
+          "--mtp",
+          "<local-path>",
+          "--max-context",
+          "262144",
+          "--kv",
+          "int8",
+          "--pool-workers",
+          "7",
+          "--stats",
+          "--vision",
+          "--adapt-swaps",
+          "24",
+          "--layer-split",
+          "auto"
+        ],
+        "api_sources": {
+          "server.py": "fc85cfd3a5b0379c8482de7a81673cae76299751aa5fe614413bc01f1fa54408",
+          "frontend.py": "e7b295d5240fac3b1bec1736e2c8d468030f8fe0c96bcc6a6b1570301258f3cf",
+          "structured.py": "bd45a0ed7993553a208fcc1584dc4f763e97a47e2da739b4897efc025ca03fc4"
+        },
+        "tokenizer": [
+          {
+            "path": "<local-path>",
+            "size": 9993,
+            "mtime_ns": 1791118652671141927,
+            "device": 66307,
+            "inode": 27936389,
+            "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+          },
+          {
+            "path": "<local-path>",
+            "size": 3353258,
+            "mtime_ns": 1791118652419139949,
+            "device": 66307,
+            "inode": 27936386,
+            "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+          },
+          {
+            "path": "<local-path>",
+            "size": 744960,
+            "mtime_ns": 1791118652431140043,
+            "device": 66307,
+            "inode": 27936387,
+            "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+          },
+          {
+            "path": "<local-path>",
+            "size": 541,
+            "mtime_ns": 1791118652431140043,
+            "device": 66307,
+            "inode": 27936388,
+            "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+          },
+          {
+            "path": "<local-path>",
+            "size": 5737005,
+            "mtime_ns": 1791118652323139194,
+            "device": 66307,
+            "inode": 27936385,
+            "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+          }
+        ],
+        "target_shards": [
+          {
+            "path": "<local-path>",
+            "size": 54817524224,
+            "mtime_ns": 1791118280160278520,
+            "device": 66307,
+            "inode": 27918703
+          },
+          {
+            "path": "<local-path>",
+            "size": 28800138432,
+            "mtime_ns": 1791117564582675851,
+            "device": 66307,
+            "inode": 27918705
+          }
+        ],
+        "pack": [
+          {
+            "path": "<local-path>",
+            "size": 306,
+            "mtime_ns": 1791118651579133352,
+            "device": 66307,
+            "inode": 27936379,
+            "sha256": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+          },
+          {
+            "path": "<local-path>",
+            "size": 1538035200,
+            "mtime_ns": 1791118651575133321,
+            "device": 66307,
+            "inode": 27936377
+          },
+          {
+            "path": "<local-path>",
+            "size": 93685,
+            "mtime_ns": 1791118651579133352,
+            "device": 66307,
+            "inode": 27936378,
+            "sha256": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac"
+          },
+          {
+            "path": "<local-path>",
+            "size": 3304,
+            "mtime_ns": 1791118652699142147,
+            "device": 66307,
+            "inode": 27936390,
+            "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+          },
+          {
+            "path": "<local-path>",
+            "size": 9993,
+            "mtime_ns": 1791118652671141927,
+            "device": 66307,
+            "inode": 27936389,
+            "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+          },
+          {
+            "path": "<local-path>",
+            "size": 3353258,
+            "mtime_ns": 1791118652419139949,
+            "device": 66307,
+            "inode": 27936386,
+            "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+          },
+          {
+            "path": "<local-path>",
+            "size": 744960,
+            "mtime_ns": 1791118652431140043,
+            "device": 66307,
+            "inode": 27936387,
+            "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+          },
+          {
+            "path": "<local-path>",
+            "size": 541,
+            "mtime_ns": 1791118652431140043,
+            "device": 66307,
+            "inode": 27936388,
+            "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+          },
+          {
+            "path": "<local-path>",
+            "size": 5737005,
+            "mtime_ns": 1791118652323139194,
+            "device": 66307,
+            "inode": 27936385,
+            "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+          }
+        ],
+        "mtp": [
+          {
+            "path": "<local-path>",
+            "size": 116099072,
+            "mtime_ns": 1791118098770949348,
+            "device": 66307,
+            "inode": 28049411
+          },
+          {
+            "path": "<local-path>",
+            "size": 1851,
+            "mtime_ns": 1791118098770949348,
+            "device": 66307,
+            "inode": 28049412,
+            "sha256": "991456cf4eb266eb8a888c349e548d11bc640f5dbd9149439aa9786af0f732fd"
+          },
+          {
+            "path": "<local-path>",
+            "size": 707788800,
+            "mtime_ns": 1791118097778942244,
+            "device": 66307,
+            "inode": 28049410
+          }
+        ],
+        "expert_profile": [
+          {
+            "path": "<local-path>",
+            "size": 196632,
+            "mtime_ns": 1791116951061261334,
+            "device": 66307,
+            "inode": 27918999,
+            "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+          }
+        ],
+        "vision_artifacts": {
+          "native_sha256": "fb1d356b9727db5b3ba71c13df52bdada803df9c38f99c703bff97515d558343",
+          "projector": {
+            "path": "<local-path>",
+            "size": 907543008,
+            "mtime_ns": 1791117661235506824,
+            "device": 66307,
+            "inode": 27936368
+          }
+        },
+        "shared_defaults_sha256": "337131b0c698d45b52a847330b504cfbc025cac9cf28fdc9b3ab6702073af2ed"
+      },
+      "api_properties": {
+        "default_generation_settings": {
+          "n_ctx": 262144,
+          "params": {
+            "temperature": 1.0,
+            "top_p": 0.95,
+            "top_k": 20,
+            "min_p": 0.0,
+            "presence_penalty": 0.0,
+            "repeat_penalty": 1.0,
+            "n_predict": 8192
+          }
+        },
+        "total_slots": 1,
+        "model_alias": "Qwen3.8-Flash-Next",
+        "model_path": "<local-path>",
+        "build_info": "Strata 0.1.38",
+        "modalities": {
+          "vision": true
+        }
+      },
+      "chat_template_sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "container_id": "systemd:flashnext-x3090:d9601c7d118f453fbe5f2dbbaaab038c",
+    "artifact_identity_policy": "Small files content-hashed; large files identified by observed inode/device/size/mtime. This is a run identity, not fresh verification of published weight hashes."
+  },
+  "cells": [
+    {
+      "context_k": 256,
+      "question": "List the main components this document describes and explain each one.",
+      "prompt_tokens": 261179,
+      "reused_tokens": 0,
+      "read_tokens": 261179,
+      "prompt_ms": 88910.7,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 77.6,
+      "draft_n": 389,
+      "host_min_available_gib": 10.745311737060547,
+      "gpu_peak_mib": 49864.0,
+      "ttft_s": 90.32748471898958,
+      "draft_n_accepted": 300,
+      "median_power_w": 451.12,
+      "input_sha256": "5c431461601d267881b377724bb531368d485f0b1b65a8476a562e444135f33b"
+    },
+    {
+      "context_k": 256,
+      "question": "Describe the structure of this document section by section.",
+      "prompt_tokens": 261177,
+      "reused_tokens": 245760,
+      "read_tokens": 15417,
+      "prompt_ms": 14003.2,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 83.8,
+      "draft_n": 384,
+      "host_min_available_gib": 10.855274200439453,
+      "gpu_peak_mib": 49864.0,
+      "ttft_s": 15.408756343997084,
+      "draft_n_accepted": 312,
+      "median_power_w": 342.91,
+      "input_sha256": "e3160fe981d98c2996a3d2e2f8ed3f6c01923c7e9f7bec54d0a2ff776a25334e"
+    },
+    {
+      "context_k": 256,
+      "question": "Explain what an operator should check first when following this document, and why.",
+      "prompt_tokens": 261182,
+      "reused_tokens": 245760,
+      "read_tokens": 15422,
+      "prompt_ms": 13996.0,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 72.7,
+      "draft_n": 412,
+      "host_min_available_gib": 10.820362091064453,
+      "gpu_peak_mib": 49864.0,
+      "ttft_s": 15.378326400008518,
+      "draft_n_accepted": 272,
+      "median_power_w": 342.71,
+      "input_sha256": "cd14a9d2da78341ee943fc1e257f3441fb2259e4474d1869b92b84c048756a10"
+    },
+    {
+      "context_k": 64,
+      "question": "List the main components this document describes and explain each one.",
+      "prompt_tokens": 64571,
+      "reused_tokens": 16384,
+      "read_tokens": 48187,
+      "prompt_ms": 17800.8,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 87.4,
+      "draft_n": 395,
+      "host_min_available_gib": 10.821334838867188,
+      "gpu_peak_mib": 49864.0,
+      "ttft_s": 18.135263523028698,
+      "draft_n_accepted": 285,
+      "median_power_w": 424.295,
+      "input_sha256": "fd55c034a290e327abfdbe05f968e2c1819097f5f36e3ce4f20b25bf2d75a05c"
+    },
+    {
+      "context_k": 64,
+      "question": "Describe the structure of this document section by section.",
+      "prompt_tokens": 64569,
+      "reused_tokens": 49152,
+      "read_tokens": 15417,
+      "prompt_ms": 9389.7,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 89.6,
+      "draft_n": 392,
+      "host_min_available_gib": 11.054725646972656,
+      "gpu_peak_mib": 49864.0,
+      "ttft_s": 9.729481615999248,
+      "draft_n_accepted": 295,
+      "median_power_w": 353.13,
+      "input_sha256": "07ff36f86d428bfd5a83734afce25eb77ba35234a96754957378fc3c97acc452"
+    },
+    {
+      "context_k": 64,
+      "question": "Explain what an operator should check first when following this document, and why.",
+      "prompt_tokens": 64574,
+      "reused_tokens": 49152,
+      "read_tokens": 15422,
+      "prompt_ms": 9401.6,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 84.2,
+      "draft_n": 391,
+      "host_min_available_gib": 11.046886444091797,
+      "gpu_peak_mib": 49864.0,
+      "ttft_s": 9.74004442000296,
+      "draft_n_accepted": 273,
+      "median_power_w": 371.7,
+      "input_sha256": "31052642472e58a23a6298ec0d8fcd1ed1183d1b7a2ae8525236ca860893ba7e"
+    }
+  ]
+}
