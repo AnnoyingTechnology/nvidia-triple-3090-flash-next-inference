@@ -4,6 +4,7 @@ from collections import defaultdict
 import datetime
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -13,7 +14,8 @@ from bench import request
 from scripts.evaluation_status import unfinished, summary
 from scripts.evaluation_provenance import capture, assert_container, require_matching
 
-GRADER = 'ulmus/eval:lcb-28fef95'
+# The 3x3090 host builds its own grader image (Dockerfile.eval-x3090); its ID is recorded per report.
+GRADER = os.environ.get('ULMUS_GRADER', 'ulmus/eval:lcb-28fef95')
 PROTOCOL = {'nonthinking': {'temperature': 0.7, 'top_p': 0.8, 'top_k': 20, 'min_p': 0.0,
                            'presence_penalty': 1.5, 'repetition_penalty': 1.0,
                            'penalty_last_n': 64, 'seed': 42},

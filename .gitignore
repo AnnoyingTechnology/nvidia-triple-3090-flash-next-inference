@@ -13,6 +13,7 @@
 !/Dockerfile
 !/Dockerfile.owner-api
 !/Dockerfile.eval
+!/Dockerfile.eval-x3090
 !/Dockerfile.ple-bf16
 !/Dockerfile.cpu-quant
 !/Dockerfile.cpu-parity

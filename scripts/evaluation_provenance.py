@@ -8,15 +8,21 @@ recomputed from the stored identity; legacy reports without one cannot be reused
 """
 import hashlib
 import json
+import os
+from pathlib import Path
 import subprocess
+import sys
 import urllib.request
 
 CONTAINER = 'ulmus-inference-test'
+# The 3x3090 host runs the server as a transient systemd unit instead of a container.
+UNIT = os.environ.get('X3090_UNIT')
 
 PROBE = r'''
 import hashlib,json,os,re,sys
 from pathlib import Path
 cfg_path=Path(sys.argv[1]); cfg=json.loads(cfg_path.read_text())
+SERVE_DIR=Path(sys.argv[2] if len(sys.argv)>2 else '/opt/strata/serve')
 def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 def identity(path, hash_small=False):
     path=Path(path); s=path.stat()
@@ -44,7 +50,7 @@ for p in Path('/proc').iterdir():
 if len(processes)!=1: raise RuntimeError('Expected one matching native engine process')
 result={'config_sha256':digest(cfg_path),'engine_config':cfg,
         'native_sha256':digest(Path(cfg['exe'])),'native_command':processes[0],
-        'api_sources':{name:digest(Path('/opt/strata/serve')/name) for name in
+        'api_sources':{name:digest(SERVE_DIR/name) for name in
                        ['server.py','frontend.py','structured.py']},
         'tokenizer':files(cfg['tokenizer']), 'target_shards':[identity(p) for p in shards]}
 for option,key in [('--pack','pack'),('--mtp','mtp'),('--expert-profile','expert_profile')]:
@@ -82,7 +88,40 @@ def inspect_container():
     return json.loads(subprocess.check_output(['docker', 'inspect', CONTAINER], text=True))[0]
 
 
+def inspect_unit():
+    output = subprocess.check_output(['systemctl', 'show', UNIT + '.service', '--property',
+                                      'InvocationID,MainPID,ActiveState'], text=True)
+    return dict(line.split('=', 1) for line in output.splitlines() if '=' in line)
+
+
+def capture_native(url):
+    unit = inspect_unit()
+    if unit.get('ActiveState') != 'active' or not unit.get('InvocationID'):
+        raise RuntimeError('Owned inference unit is not running')
+    pid = unit['MainPID']
+    command = Path(f'/proc/{pid}/cmdline').read_bytes().decode().split('\0')[:-1]
+    config = command[command.index('--config') + 1]
+    serve_dir = Path(os.readlink(f'/proc/{pid}/cwd')) / 'serve'
+    probe = subprocess.run([sys.executable, '-', config, str(serve_dir)], input=PROBE, text=True,
+                           capture_output=True, check=True, timeout=60)
+    with urllib.request.urlopen(url.rstrip('/') + '/props', timeout=10) as response:
+        props = json.load(response)
+    artifacts = json.loads(probe.stdout)
+    identity = {'image_id': {'native': artifacts['native_sha256'],
+                             'vision': artifacts.get('vision_artifacts', {}).get('native_sha256')},
+                'api_command': command, 'artifacts': artifacts,
+                'api_properties': {key: props.get(key) for key in ['default_generation_settings',
+                    'total_slots', 'model_alias', 'model_path', 'build_info', 'modalities']},
+                'chat_template_sha256': hashlib.sha256(props['chat_template'].encode()).hexdigest()}
+    return {'fingerprint': fingerprint(identity), 'identity': identity,
+            'container_id': 'systemd:' + UNIT + ':' + unit['InvocationID'],
+            'artifact_identity_policy': 'Small files content-hashed; large files identified by observed '
+                'inode/device/size/mtime. This is a run identity, not fresh verification of published weight hashes.'}
+
+
 def capture(url):
+    if UNIT:
+        return capture_native(url)
     container = inspect_container()
     if not container['State']['Running']:
         raise RuntimeError('Owned inference container is not running')
@@ -104,6 +143,12 @@ def capture(url):
 
 
 def assert_container(runtime):
+    if UNIT:
+        unit = inspect_unit()
+        if ('systemd:' + UNIT + ':' + unit.get('InvocationID', '') != runtime['container_id']
+                or unit.get('ActiveState') != 'active'):
+            raise RuntimeError('Inference unit changed during evaluation')
+        return
     current = inspect_container()
     if current['Id'] != runtime['container_id'] or not current['State']['Running']:
         raise RuntimeError('Inference container changed during evaluation')

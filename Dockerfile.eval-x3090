@@ -1,0 +1,9 @@
+# Grader image for the 3x3090 host. Same evaluator, grade.py, Python 3.10, numpy pin and pyarrow as
+# Dockerfile.eval, without the CUDA engine image (the 3x3090 host builds the engine natively).
+FROM python:3.10-slim@sha256:c1aaf3d03e14944a039a1647e0b3f6f34c6bee517bac6ff380215ee099c4e808
+RUN python -m venv /opt/strata/.venv && /opt/strata/.venv/bin/pip install --no-cache-dir \
+    numpy==2.2.6 pyarrow==21.0.0
+COPY eval-source/testing_util.py eval-source/LICENSE /opt/lcb/
+COPY grade.py /opt/lcb/grade.py
+ENV OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1
+ENTRYPOINT ["/opt/strata/.venv/bin/python", "/opt/lcb/grade.py"]
