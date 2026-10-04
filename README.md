@@ -1,7 +1,7 @@
 # Flash-Next on 3x RTX 3090 + i7-6900K
 
 This repository qualifies **Qwen3.8-Flash-Next on three 24 GiB RTX 3090s, an i7-6900K (8 cores,
-AVX2, quad-channel DDR4) and 94 GiB of usable RAM**, using the same target, workloads and
+AVX2; DDR4, quad-channel per owner, not read from firmware) and 94 GiB of usable RAM**, using the same target, workloads and
 acceptance rules as the frozen single-RTX 4090 campaign ("Ulmus") recorded below. The engine is
 pinned [Strata](https://github.com/Niko1221/Strata) `99f3dbd`, built natively for SM86 with CUDA
 12.4. All experts and the IQ4_NL n-gram table stay in RAM (pinned / mlocked); no disk decode tier.
