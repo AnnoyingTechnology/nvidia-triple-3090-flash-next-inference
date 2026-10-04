@@ -14,6 +14,7 @@ task_arch=${STRATA_CUDA_ARCH:-86}
 task_jobs=${STRATA_BUILD_JOBS:-$(nproc)}
 task_build=${STRATA_BUILD_ROOT:-$task_root/build}
 export CC=gcc-13 CXX=g++-13 CUDAHOSTCXX=g++-13
+task_uv=${UV:-$(command -v uv || echo "$HOME/.local/bin/uv")}
 
 fetch() {  # url output
     if command -v curl >/dev/null; then
@@ -40,12 +41,12 @@ fi
 
 # Python: the Ulmus image ran Ubuntu 22.04's Python 3.10; keep that ABI for the locked wheels.
 if ! test -x "$task_source/.venv/bin/python"; then
-    uv venv --python 3.10 "$task_source/.venv"
+    "$task_uv" venv --python 3.10 "$task_source/.venv"
 fi
 export VIRTUAL_ENV="$task_source/.venv" PATH="$task_source/.venv/bin:$PATH"
 export STRATA_GGUF_PY="$task_source/ref/llama.cpp/gguf-py"
-uv pip install --requirement "$task_source/requirements.txt"
-uv pip install --require-hashes --only-binary=:all: --requirement "$task_root/api-requirements.lock"
+"$task_uv" pip install --requirement "$task_source/requirements.txt"
+"$task_uv" pip install --require-hashes --only-binary=:all: --requirement "$task_root/api-requirements.lock"
 
 cd "$task_source"
 cmake -S . -B "$task_build/strata" -G Ninja \
