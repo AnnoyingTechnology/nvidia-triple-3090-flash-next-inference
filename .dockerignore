@@ -1,14 +1,6 @@
-# Only the owner API/evaluator build inputs belong in this context.
-# Base engine builds use the separately pinned upstream source context.
+# Only the isolated grader's build inputs belong in this context (Dockerfile.eval-x3090).
 **
-!Dockerfile*
-!api-wheels
-!api-wheels/**
-!api-requirements.lock
+!Dockerfile.eval-x3090
 !grade.py
 !eval-source
 !eval-source/**
-!patches/strata-vision-unload-load.patch
-!patches/ulmus-lend-vram.patch
-!patches/llama-mtmd-host-copy.patch
-!patches/decode-host-diagnostics.patch

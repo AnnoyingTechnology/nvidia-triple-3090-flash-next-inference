@@ -1,7 +1,7 @@
-"""Export the 3x3090 evidence allowlist to results/public/x3090 and summarize the placement probes.
+"""Export the evidence allowlist to results/public and summarize the placement probes.
 
-Separate from export_public.py so the frozen Ulmus manifest is never rewritten. Drops per-sample
-telemetry, local paths and private addresses; the manifest records private and public hashes.
+Drops per-sample telemetry, local paths and private addresses; the manifest records the private
+source and public export hashes (checked by scripts/check_public.py).
 """
 import hashlib
 import json
@@ -10,10 +10,11 @@ import re
 import statistics
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'results/public/x3090'
+OUT = ROOT / 'results/public'
 FILES = [
     'native-components.json', 'grader-controls-x3090.json',
     'api-check-smoke-20261004.json', 'api-check-gpu12-b-20261004.json', 'api-check-gpu12-c-20261004.json',
+    'api-check-service-20261004.json',
     'context-decode-gpu12-a-20261004.json', 'context-decode-gpu102-a-20261004.json',
     'context-decode-gpu1-a-20261004.json', 'context-decode-gpu12-c-20261004.json',
     'context-decode-gpu12-b-long-20261004.json',
@@ -78,11 +79,11 @@ def main():
         public = json.dumps(clean(json.loads(raw)), indent=2) + '\n'
         (OUT / name).write_text(public)
         manifest['sources'][name] = {'private_sha256': hashlib.sha256(raw).hexdigest(),
-                                     'public_sha256': hashlib.sha256(public.encode()).hexdigest()}
+                                     'public_export_sha256': hashlib.sha256(public.encode()).hexdigest()}
     summary = json.dumps(summarize(), indent=2) + '\n'
     (OUT / 'placement-20261004-summary.json').write_text(summary)
     (OUT / 'export-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    leaks = [p.name for p in OUT.iterdir() if re.search(r'/home/|(?<![\d.])10\.\d+\.\d+\.\d+', p.read_text())]
+    leaks = [p.name for p in OUT.glob('*.json') if re.search(r'/home/|(?<![\d.])10\.\d+\.\d+\.\d+', p.read_text())]
     if leaks:
         raise SystemExit(f'private identifiers remain in {leaks}')
     print('exported', len(manifest['sources']), 'files to', OUT.relative_to(ROOT))

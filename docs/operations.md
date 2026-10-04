@@ -1,109 +1,91 @@
-# Operations and reproducibility
+# Operations
 
-Use the README build/prepare/start sequence. The selected API stays on host
-loopback port 19623, model `ulmus`. Required host components are a suitable
-NVIDIA driver, Docker with GPU access, Git, curl and Python 3. Fresh builds
-are substantial; model/source/cache paths stay within the checkout.
+## Build and prepare
 
-`run.sh` refuses to start while any GPU compute workload is active, records
-its actual image ID and profile/default hashes, then launches the owned
-`ulmus-inference-test` container. `stop.sh` waits for its removal before a
-profile switch. It preserves model files and images. The 175 GiB container
-memory budget is for this 192 GB host; smaller machines need separate tuning.
-No power policy, driver, firewall or automatic startup is changed by these tools.
-
-The selected profile is `flash-iq3s-256k-vision-tune-owneradapt24`, using the locally
-built `ulmus/strata:99f3dbd-lendvram` v4 image. Build it with
-`docker build -f Dockerfile.lend-vram -t ulmus/strata:99f3dbd-lendvram .`
-after the base owner image. Do not build during a performance measurement.
-One target model stays loaded; image staging lends/reclaims its expert-cache
-tail under the request FIFO. The measured additional delay is about 93 ms per
-uncached image; cached images do not LOAD/LEND again.
-
-For batch-size rollback, stop the owned workload, start
-`flash-iq3s-256k-vision-tune-ownerswap` (original v4, 96 swaps) and update both
-launcher profile occurrences. For a full vision-swap rollback, start
-`flash-iq3s-256k-vision-tune-ownervision` and wait for readiness. Change both
-selected-profile occurrences in `scripts/opencode.sh` back to that resident
-profile before using the launcher. Do not restart the preserved 27B service as
-an incidental fallback. Older experiment runners restore resident vision; the resumed diagnostic runners
-restore original v4 with 96 swaps. After either, explicitly restore selected
-`owneradapt24` before opening OpenCode. The final vision-qualification runner
-leaves the candidate running only on success.
-
-## Requests
+On the 3x RTX 3090 host, as the checkout owner (no Docker needed for the engine):
 
 ```bash
-curl -fsS http://127.0.0.1:19623/v1/chat/completions \
-  -H 'Content-Type: application/json' \
-  -d '{"model":"ulmus","messages":[{"role":"user","content":"Explain a safe nginx reload procedure."}],"max_tokens":2048}'
+bash scripts/build_native.sh                  # Strata at the pin, SM86, Python 3.10 venv (~13 min)
+python3 scripts/prepare_models.py             # 84.5 GB of pinned GGUFs, hash-verified, resumable
+bash scripts/prepare_packs_native.sh mtp      # MTP tensors range-fetched, Q2_0 draft runtime
+bash scripts/prepare_packs_native.sh pack     # native IQ3_S pack and tokenizer
 ```
 
-Defaults use low reasoning and stochastic sampling. Clients can explicitly
-request `reasoning_effort: none` or a larger budget/effort. The shared settings
-are a supported Strata sidecar, not a request-rewriting patch. Machine-facing
-JSON uses native prompt-and-validate `response_format`; do not combine it with
-tool calls. Invalid/capped JSON returns an error. Ordinary tool requests work
-separately, with the runtime's native parser.
+Allow about 105 GB of free disk for models, MTP sources, pack, build and virtual environment.
+`scripts/check_native_components.py --gpu 1` runs the component checks while no service owns GPU1.
+`scripts/job.sh <name> <command...>` runs any long step detached with `results/jobs/<name>.{log,pid,done}`.
 
-An SSH tunnel permits remote use without changing the listener:
+## Services
 
 ```bash
-ssh -N -L 19623:127.0.0.1:19623 <user>@<host-address>
+sudo bash scripts/install_services.sh         # renders systemd/*.service.in, daemon-reload, verify
+sudo systemctl enable qwen-3.8-27b.service    # boot default on this host
 ```
 
-## Benchmarks
+`qwen3.8-flash-next.service` and `qwen-3.8-27b.service` declare `Conflicts=` on each other and an
+ordering, so `systemctl start` of either stops the other before starting; measured switch: Flash-Next
+stopped in 3 s and the 27B API process started ~2 minutes later. Flash-Next is ready about 2 minutes after start
+(weights loaded, n-gram table locked in ~29 s, caches filled). Its `ExecStartPre` renders the runtime
+config into `results/runtime/` and records the launch in `results/launches/`.
 
-Generate synthetic prefill fixtures inside the runtime image:
+The 27B unit carries the former `qwen-serving.service` settings unchanged (renamed, with the
+`Restart=always` drop-in folded in). Its profile and evidence live in the
+[dual-3090 repository](https://github.com/AnnoyingTechnology/nvidia-dual-3090-llm-inference).
+
+## Clients
+
+The Flash-Next API listens on `127.0.0.1:19623` only. A client keeps an SSH tunnel, for example a
+systemd user unit running `ssh -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=30
+-L 127.0.0.1:19624:127.0.0.1:19623 <user>@<host-address>` with `Restart=always`, and points an
+OpenAI-compatible provider at `http://127.0.0.1:19624/v1`. OpenCode entry (model `id` is the server's
+model name):
+
+```json
+"ai-3090-flash-next": {
+  "npm": "@ai-sdk/openai-compatible",
+  "name": "Qwen3.8 Flash-Next (3x RTX 3090)",
+  "options": {"baseURL": "http://127.0.0.1:19624/v1", "timeout": 600000},
+  "models": {"qwen3.8-flash-next": {
+    "id": "Qwen3.8-Flash-Next", "attachment": true, "reasoning": true, "tool_call": true,
+    "modalities": {"input": ["text", "image"], "output": ["text"]},
+    "interleaved": {"field": "reasoning_content"},
+    "options": {"reasoningEffort": "low", "temperature": 1, "top_p": 0.95, "top_k": 20},
+    "variants": {"off": {"reasoningEffort": "none", "temperature": 0.7, "top_p": 0.8, "presence_penalty": 1.5},
+                 "low": {"reasoningEffort": "low"}, "medium": {"reasoningEffort": "medium"},
+                 "high": {"disabled": true}, "xhigh": {"reasoningEffort": "xhigh"}},
+    "limit": {"context": 253952, "input": 245760, "output": 8192}}}}
+```
+
+Only one of the two models is served at a time; the client entry of the stopped one simply fails.
+
+## Experiments and evaluations
+
+`run_native.sh <profile>` (root) starts an alternative profile as the transient unit `flashnext-x3090`
+and refuses while either model service, the unit itself or a foreign GPU process is active;
+`stop_native.sh` stops it. Never measure while building or downloading.
+
+Evaluations bind to the running unit when `X3090_UNIT` names it (`qwen3.8-flash-next` for the
+service, `flashnext-x3090` for experiments):
 
 ```bash
-docker run --rm --user "$(id -u):$(id -g)" \
-  --mount "type=bind,src=$PWD,dst=/work" \
-  ulmus/strata:99f3dbd-ownerapi python /work/fixtures.py \
-  --tokenizer /work/packs/iq3s/tokenizer --out /work/fixtures
-python3 owner_api_check.py --profile flash-iq3s-256k-vision-tune-owneradapt24 \
-  --vision --out results/api-check.json
-python3 bench.py --out results/perf.json --repeats 2 --decode-tokens 512 \
-  --fixtures fixtures --prefill-k 32 --paired-id owner-profiles-v1 \
-  --sampling '{"temperature":1,"top_p":0.95,"top_k":20,"min_p":0,"presence_penalty":0,"repetition_penalty":1,"reasoning_effort":"low"}'
+X3090_UNIT=qwen3.8-flash-next python3 scripts/context_decode_probe.py --context-k 32 128 --out results/decode.json
+python3 scripts/prepare_practical30.py && sudo bash scripts/build_grader_x3090.sh
+sudo X3090_UNIT=qwen3.8-flash-next ULMUS_GRADER=x3090/eval:lcb-28fef95 python3 practical_eval.py \
+  --cases eval/practical30-v2-cases.jsonl --effort low --seed 42 --tokens 32768 --label low --out results/p30.json
+python3 vision_compare.py --backend local --model x3090 --effort low --out results/vision15.json
 ```
 
-The tokenizer options above follow `fixtures.py --help`; use the pinned model
-pack, not another tokenizer. Actual engine token counts and cache-hit accounting
-are returned with each request. Repeat namespaces and output limits matter;
-compare request hashes, sampler, effort, context and caches before claiming a gain.
-
-The practical-code grader uses pinned LiveCodeBench evaluator source in an
-isolated container with no network, no capabilities, read-only filesystem,
-bounded memory/CPU/PIDs and positive/negative controls. Dataset question and
-private-test payloads are downloaded separately and never published here.
-The standalone synthetic vision deck contains its own ground truth and sources.
-
-The original 30-function prototype had three ambiguous interfaces and is retained
-as an invalid comparison prototype. V2 specifies them and exposes one public
-example per task. All private tests/controls are unchanged; every task is rerun.
-This is a local canary deck, not a blind preregistered public benchmark.
-
-```bash
-python3 scripts/prepare_practical30.py
-bash scripts/build_grader.sh
-python3 practical_eval.py --cases eval/practical30-v2-cases.jsonl \
-  --effort low --tokens 32768 --label practical30-low --out results/practical30-low.json
-```
-
-The evaluator verifies positive/negative controls for every function before model
-calls and binds the run to the actual owned runtime. The output limit is a runaway
-guard; exhausting it withholds full-cohort accuracy. Keep off and low runs separate.
+The grader needs Docker; on this host the daemon runs with `iptables`, `ip6tables` and `ip-forward`
+disabled and no default bridge (the grader uses `--network none`; its image builds with `--network host`).
 
 ## Public evidence
 
-`python3 scripts/export_public.py` exports a fixed allowlist of checkpoint
-results and drops per-sample telemetry/local paths. It does not export host
-inventory, private logs or dataset payloads. Stage the intended files and run
-`python3 scripts/check_public.py` before committing. Generated private results
-are ignored; new public evidence must be explicitly reviewed and exported.
+`python3 scripts/export_public_x3090.py` exports the allowlist to `results/public/` without telemetry,
+local paths or private addresses and writes the placement summary; `python3 scripts/check_public.py`
+verifies the tracked surface, links and export checksums before a commit.
 
-The checked-in JSON includes full synthetic benchmark outputs and scoring
-summaries. Its manifest records both private-original and public-export hashes.
-A sanitized export's checksum is not the original checksum. Raw private captures
-remain local for diagnosis; downloaded dependencies and weights are not Git assets.
+## Rollback
+
+`sudo systemctl start qwen-3.8-27b.service` returns the host to the 27B API. Removing the Flash-Next
+setup: `systemctl disable --now qwen3.8-flash-next.service`, delete its unit, and remove the checkout
+(models, pack, MTP and build are inside it).

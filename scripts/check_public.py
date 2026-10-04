@@ -19,7 +19,7 @@ for name in filter(None,files):
     if path.suffix in ['.png','.jpg','.jpeg']:
         continue
     content=path.read_text()
-    if re.search(r'/(?:home|Users)/[a-zA-Z0-9_.-]+/|192\.168\.1\.50|gh[oaprs]_[A-Za-z0-9]{20,}|sk-proj-[A-Za-z0-9]{20,}',content):
+    if re.search(r'/(?:home|Users)/[a-zA-Z0-9_.-]+/|192\.168\.\d+\.\d+|(?<![\d.])10\.\d+\.\d+\.\d+|gh[oaprs]_[A-Za-z0-9]{20,}|sk-proj-[A-Za-z0-9]{20,}',content):
         errors.append('Private host path/address or credential-like value: '+name)
     if path.suffix=='.md':
         for target in re.findall(r'\]\(([^\s)]+)\)',content):

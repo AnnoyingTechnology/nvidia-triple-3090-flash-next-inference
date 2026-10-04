@@ -1,12 +1,12 @@
 Copyright 2026 Julien Arnaud.
 
-This repository contains inference profiles, benchmark tools and research records.
+This repository contains inference profiles, service units, benchmark tools and research records.
 Its original code is licensed under Apache-2.0. Model weights are not distributed.
 Downloaded source, model, dataset and image licenses remain applicable separately.
 
-The upstream patches in patches/ are from Niko1221/Strata, licensed under MIT:
-Copyright (c) 2026 Niko1221 and the Strata contributors.
-The complete upstream notice is retained in patches/STRATA-LICENSE.
+The inference engine is built unmodified from Niko1221/Strata at the pinned commit (MIT):
+Copyright (c) 2026 Niko1221 and the Strata contributors. Its source is fetched by
+scripts/build_native.sh and is not redistributed here.
 
 LiveCodeBench's evaluator is downloaded from the pinned upstream repository;
 its license accompanies the evaluator in the local build context.
@@ -15,10 +15,5 @@ Photographs named photo-*.png in fixtures/vision15/ are public-domain/CC0 scikit
 data, with individual source URLs, authors, licenses and hashes in that deck's
 manifest.json. NASA astronaut photo: public domain. Chelsea: Stefan van der Walt,
 CC0. Coffee: Rachel Michetti, courtesy of Pikolo Espresso Bar, CC0.
-Synthetic benchmark figures and terminal screenshots are original to this project.
-
-ChartQA evaluation inputs are downloaded separately from vis-nlp/ChartQA at
-revision 044eabfc306abfe9340c5741f0093aefc5973d06, whose upstream license is GPL-3.0.
-Chart images and question payloads are not redistributed here. The public
-checkpoint contains selection provenance, generated responses and derived scores.
-Upstream: https://github.com/vis-nlp/ChartQA
+Synthetic benchmark figures and terminal screenshots are original to the Ulmus project
+(github.com/AnnoyingTechnology/nvidia-4090-flash-next-inference), from which this repository derives.

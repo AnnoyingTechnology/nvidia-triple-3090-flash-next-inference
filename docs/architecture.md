@@ -1,104 +1,65 @@
-# Architecture and pinned inputs
+# Architecture
 
-Observed campaign hardware, 2026-10-03: Ryzen 7900 (12 physical cores, 24 threads),
-192 GB installed RAM (187 GiB usable), one RTX 4090 (24,564 MiB reported VRAM,
-SM89), PCIe 4 x16, no swap, 280 W GPU limit. The recorded driver is 550.163.01;
-engine builds use CUDA 12.4. Four 48 GB DDR5 modules are owner-declared;
-current DDR5 frequency and effective CPU-memory bandwidth are not measured.
+## Hardware, observed 2026-10-04
 
-## Source and image pins
-
-| Component | Pin |
+| Component | Value |
 |---|---|
-| Strata | `99f3dbd0b21d1401b3769e0c0d963913607f380b` |
+| CPU | Intel i7-6900K, 8 cores / 16 threads, AVX2, no AVX-512 |
+| RAM | 94.2 GiB usable DDR4 (quad-channel per owner, not read from firmware), 7.5 GiB swap |
+| GPUs | 3x RTX 3090 24 GiB, SM86, driver 550.163.01 |
+| Links | PCIe 3.0: GPU0 x8 (desktop and remote-desktop card), GPU1 and GPU2 x16; topology PHB, no NVLink or P2P |
+| Measured H2D | 5.8 GB/s (GPU0), 11.7 GB/s (GPU1), 11.0 GB/s (GPU2) |
+| Power | 225 W on all three cards, persisted by `nvidia-power-limit.service` |
+| OS | Debian 13, distribution CUDA 12.4 toolkit, GCC 13 as CUDA host compiler |
+
+## Pins
+
+| Input | Pin |
+|---|---|
+| Strata | `99f3dbd0b21d1401b3769e0c0d963913607f380b`, unmodified |
 | llama.cpp reference | `3cf03257f219afbe7334045ff7c6a06ac68c627d` |
-| NVIDIA CUDA base | `sha256:622e78a1d02c0f90ed900e3985d6c975d8e2dc9ee5e61643aed587dcf9129f42` |
-| Recorded base engine image | `sha256:8f933353f8a8c5617c8dc37775db03bf168e4a483f20ce34197f892b54cc7c05` |
-| Recorded owner API image | `sha256:a1649d9812c7944dbbf880a33e272886a5b059bae22e65e713404a50aed46644` |
-| Engine binary in both recorded images | `a4d403dc589c656121c33960314da0fc9e728c60802a07f51d1a62e1cbf5c676` |
-| Official MTP / optional BF16 table source | `Qwen/Qwen3.8-Flash-Next@de4b8e4d43b917e7706784d8bb445c9af86a3540` |
-| GSQ target/projector source | `ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF@ed59f92082b1e93c0e96d60a8b11aab089b52f09` |
+| Target / projector | `ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF@ed59f92082b1e93c0e96d60a8b11aab089b52f09` |
+| MTP source | `Qwen/Qwen3.8-Flash-Next@de4b8e4d43b917e7706784d8bb445c9af86a3540` |
+| Evaluator | LiveCodeBench `28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24`, `testing_util.py` SHA-256 `b7cb6a8a...` |
+| Grader base | `python:3.10-slim@sha256:c1aaf3d03e14944a039a1647e0b3f6f34c6bee517bac6ff380215ee099c4e808` |
 
-Rebuilding source can produce different image IDs. These IDs identify the measured
-images, not published pullable images or a bit-reproducible build guarantee.
-The owner image adds only hash-locked validator dependencies; no inference or HTTP
-source changes. The optional BF16 loader and CPU-quantization overlays are retained
-as upstream patches with their MIT notice and pinned heads in the benchmark report.
-
-### Selected lend-VRAM v4 — 2026-10-04
-
-Later qualification selects profile `flash-iq3s-256k-vision-tune-owneradapt24`,
-using the identical v4 image/binaries/weights below, with `--adapt-swaps 24`.
-The original `ownerswap` profile retains its 96-swap default for rollback.
-Matched ABBA gives +0.88% at 32K and +4.26% at 128K; practical30 29/30 natural,
-vision 14/15 natural, all API and maximum-image staging checks pass.
-[Evidence and limitations](exploration-2026-10-04.md).
-
-
-`Dockerfile.lend-vram` adds the engine's CUDA VMM cache tail, vision LOAD/UNLOAD
-and pinned host projector staging to the owner image. V4's measured image ID is
-`sha256:24386fa3fb0e4d7ff2680174d5a126090293920c4556f1cf289a6af9d24bdefe`;
-engine SHA-256 `c8036c3b4f539701061835677377a564a6728aefa88435b390ac93729cfd3a29`.
-Its engine/server patch SHA-256 is
-`4edcf118309596200c8bf37c656c072a6602dac4a5f96838a40e956da4ca7105`;
-mtmd host-copy patch SHA-256
-`7c8119143f0b36813ac4bb0194da7a2072024eba13c2514de9c7ee97236ca4f7`.
-Vision binary SHA-256 is
-`4a695b5099016fdc0e2d762ac9a194581eb80cc45d560ee8981a52c8262103f0`.
-These identify the **selected serving image**, profile
-`flash-iq3s-256k-vision-tune-owneradapt24`. The original owner API image remains the
-resident-vision rollback, with unchanged target/projector/defaults. This custom
-engine/server/mtmd patch is additional to the dependency-only owner API base.
-
-The original identical-request replay confirms +6.17% decode; matched 64K
-gives +6.74%, and a single 128K pair gives +4.81%. The changed-prefix screen
-still gives −2.07%: selection does not imply a uniform gain. Practical30 low
-scores 29/30 with all natural completions, inside the original seed range.
-The owner explicitly accepts +93 ms median once per uncached image; the earlier
-100 ms engineering target is superseded. Cached images bypass staging.
-[Replay](../results/public/swap-prefix-control-comparison.json),
-[64K](../results/public/swap64-comparison.json),
-[128K](../results/public/swap128-comparison.json),
-[canaries](../results/public/practical30-swap-v4-comparison.json).
-
-The expert arena has stable CUDA VMM addresses and a lendable tail. Under the
-request FIFO, uncached image groups run LEND → LOAD → encode → UNLOAD → RECLAIM;
-text generation is refused while the tail is lent. The worker keeps a pinned
-host copy of the projector. Partial lending is 1408 MiB on the first image;
-later images lend 1600 MiB. The model is never reloaded for vision. Two new
-maximum-budget 2048×2048 images and one cached repeat pass on the selected
-serving instance, including matched LEND/RECLAIM counts and natural completion.
-[Staging check](../results/public/swap-v4-large-image-smoke.json).
-
-## Target files
-
-| File suffix / asset | Bytes | SHA-256 |
+| File | Bytes | SHA-256 |
 |---|---:|---|
-| IQ3_S `00001-of-00002.gguf` | 54817524224 | `4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3` |
-| IQ3_S `00002-of-00002.gguf` | 28800138432 | `316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113` |
-| BF16 mmproj | 907543008 | `b1a82259702816a5330d7bd7607cd9676b11780e79ff7348c21103ff3ce49bd0` |
+| IQ3_S `00001-of-00002.gguf` | 54,817,524,224 | `4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3` |
+| IQ3_S `00002-of-00002.gguf` (IQ4_NL n-gram table) | 28,800,138,432 | `316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113` |
+| BF16 mmproj | 907,543,008 | `b1a82259702816a5330d7bd7607cd9676b11780e79ff7348c21103ff3ce49bd0` |
 
-The second GGUF contains the IQ4_NL ngram table. `scripts/prepare_models.py`
-verifies these immutable inputs. `scripts/prepare_packs.sh` exports the native
-pack/tokenizer and builds the pinned Q2_0-expert MTP runtime assets. Main target
-weights are not rewritten by preparation. The MTP runtime uses Q8 projections
-and Q2_0 experts for its draft; this is not Q8 reference-target inference.
+Measured native binaries: engine `7ec9f59087aa8e6c009390a17a9976de924f2abb4c66b0d7973ffe9290aee250`,
+vision tool `fb1d356b9727db5b3ba71c13df52bdada803df9c38f99c703bff97515d558343`. A rebuild on other
+hardware can produce different hashes; these identify the measured build, not a reproducibility guarantee.
 
-## Runtime placement
+## Build
 
-- Host RAM: complete expert working set, complete ngram table, bounded pinned
-  buffers and long-context state. The disk is a load source, not a decode tier.
-- GPU: dense target work, verified MTP, resident hot experts, KV window and
-  workspaces. The selected GPU BF16 vision encoder stages only for new images;
-  its cache tail is reclaimed before generation. The preserved resident-vision
-  baseline reserves its encoder workspace before automatic expert-cache sizing.
-- CPU: AVX-512 cold-expert work plus orchestration. PCIe fraction .35 splits
-  cold-expert work with streamed GPU execution; it is a measured profile choice.
-- Server: one execution slot with history/prefix reuse. Two independent parked
-  histories were checked, but requests execute FIFO.
+`scripts/build_native.sh` reproduces the Ulmus Dockerfile's CMake options and targets natively:
+SM86, `CC/CXX/CUDAHOSTCXX` = GCC 13 (CUDA 12.4 rejects GCC 14), ggml built native for the host,
+Strata's AVX2 expert kernels selected at run time, and a Python 3.10 `uv` virtual environment so
+the hash-locked API wheels (`api-requirements.lock`) install unchanged. The Ulmus lend-VRAM patch is
+not applied: it refuses multi-GPU operation. The build takes about 13 minutes on this CPU.
 
-Int8 KV is a representation trade. Adaptive CPU/GPU expert arithmetic rounds
-slightly differently; a fixed seed alone does not guarantee identical text.
-The native context setting is capacity, not proof of useful reasoning at its
-exact boundary. The published default is the tested 256K-capacity profile,
-not a claim of full-reference arithmetic or universal equivalence.
+## Placement
+
+- **GPU1**: layers 0-24, dense weights, its KV, its expert cache, prompt-path buffers.
+- **GPU2**: layers 25-47, output head, MTP draft layer (1,098 MiB), its KV and expert cache.
+  The two caches hold 17,557 of the 24,576 profiled experts, about 99.1% of the routed mass.
+  One hand-off per verify window crosses host memory; no P2P is needed.
+- **GPU0**: the BF16 vision encoder process alone (`vision.cuda_device: 0`), next to the desktop.
+- **Host RAM**: all 24,576 experts pinned once (~50 GiB anonymous), the 28.8 GB n-gram table mlocked
+  (`--ple-io ram`), and the CPU pool computing the few experts no card holds.
+- **Disk**: load source only.
+
+Loaded and idle: GPU0 2.0 GiB, GPU1 23.8 GiB, GPU2 23.7 GiB, 446 MiB free across the stages after
+the caches fill. Host MemAvailable is ~11-12 GiB, and at least 10.75 GiB during a 256K prompt.
+The unit's `MemoryMax=88G` is a coarse guard only: mlocked n-gram pages stay charged to whichever
+cgroup first read the file, so host-wide MemAvailable is the figure to watch.
+
+## Boundaries
+
+- One request at a time; further requests queue FIFO.
+- IQ3_S target, int8 KV and a Q2_0-expert draft: quality-relevant quantization boundaries.
+- Q4_K_XL does not fit: Strata pins every expert in host RAM (~103 GiB on Ulmus).
+- The API is unauthenticated and bound to loopback.
