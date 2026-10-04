@@ -24,11 +24,17 @@ class Telemetry:
                 result = subprocess.run([
                     'nvidia-smi', '--query-gpu=memory.used,power.draw,temperature.gpu,utilization.gpu,pcie.link.gen.current',
                     '--format=csv,noheader,nounits'], capture_output=True, text=True, timeout=5)
-                fields = [float(x.strip()) for x in result.stdout.strip().split(',')]
+                rows = [[float(x.strip()) for x in line.split(',')]
+                        for line in result.stdout.strip().splitlines()]
                 memory = dict(line.split(':', 1) for line in Path('/proc/meminfo').read_text().splitlines())
-                self.samples.append({'at': time.monotonic(), 'gpu_mib': fields[0], 'power_w': fields[1],
-                                     'temperature_c': fields[2], 'gpu_util_pct': fields[3], 'pcie_gen': fields[4],
-                                     'mem_available_kib': int(memory['MemAvailable'].split()[0])})
+                # Several GPUs (3x3090 host): totals across all boards, the hottest/busiest card, per-GPU rows.
+                sample = {'at': time.monotonic(), 'gpu_mib': sum(r[0] for r in rows),
+                          'power_w': sum(r[1] for r in rows), 'temperature_c': max(r[2] for r in rows),
+                          'gpu_util_pct': max(r[3] for r in rows), 'pcie_gen': min(r[4] for r in rows),
+                          'mem_available_kib': int(memory['MemAvailable'].split()[0])}
+                if len(rows) > 1:
+                    sample['per_gpu'] = [{'gpu_mib': r[0], 'power_w': r[1], 'gpu_util_pct': r[3]} for r in rows]
+                self.samples.append(sample)
             except (OSError, ValueError, subprocess.TimeoutExpired):
                 pass
             self.stop.wait(0.5)
