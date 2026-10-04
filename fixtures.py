@@ -1,10 +1,13 @@
 """Create bounded, deterministic public-code prompts using the target tokenizer."""
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 
-sys.path.insert(0, '/opt/strata/tools')
+# STRATA_ROOT: the pinned Strata checkout (the image's /opt/strata; native hosts set it).
+STRATA = Path(os.environ.get('STRATA_ROOT', '/opt/strata'))
+sys.path.insert(0, str(STRATA / 'tools'))
 import strata_tokenizer as ST
 
 ap = argparse.ArgumentParser()
@@ -18,7 +21,7 @@ for token, index in vocab.items():
     tokens[index] = token
 tok = ST.Tokenizer(tokens, (tpath / 'merges.txt').read_text().split('\n'),
                    json.loads((tpath / 'token_type.json').read_text()))
-corpus = '\n'.join(Path('/opt/strata', name).read_text() for name in (
+corpus = '\n'.join(Path(STRATA, name).read_text() for name in (
     'docs/HOW_IT_WORKS.md', 'src/program/generate.cpp', 'src/ngram/ple_reader.cpp',
     'serve/server.py', 'tools/iq_pack.py'))
 # Chat markers inside source text must be literal data, not synthetic role boundaries.
