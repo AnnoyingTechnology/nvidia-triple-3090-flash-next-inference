@@ -187,5 +187,5 @@ Capped outputs are never scored; the 512-token cells above are performance-only.
 - [References](docs/references.md): upstream sources and pinned revisions.
 - [Checkpoint](CHECKPOINT.md): current state and return handoff.
 
-Sanitized JSON evidence is under [results/public/](results/public/). Model weights, builds,
+Sanitized JSON evidence is under `results/public/` ([placement summary](results/public/placement-20261004-summary.json)). Model weights, builds,
 virtual environments, logs and credentials are intentionally excluded.

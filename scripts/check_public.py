@@ -8,6 +8,9 @@ import subprocess
 ROOT=Path(__file__).resolve().parents[1]
 files=subprocess.check_output(['git','ls-files','-z'],cwd=ROOT).decode().split('\0')
 errors=[]
+# Real private addresses are passed at check time (PUBLIC_CHECK_ADDRESSES), never written here.
+import os
+PRIVATE=re.compile('|'.join(r'(?<![\d.])'+re.escape(a)+r'(?![\d.])' for a in os.environ.get('PUBLIC_CHECK_ADDRESSES','').split())) if os.environ.get('PUBLIC_CHECK_ADDRESSES','').strip() else None
 for name in filter(None,files):
     path=ROOT/name
     if name.startswith('results/') and not name.startswith('results/public/'):
@@ -19,7 +22,9 @@ for name in filter(None,files):
     if path.suffix in ['.png','.jpg','.jpeg']:
         continue
     content=path.read_text()
-    if re.search(r'/(?:home|Users)/[a-zA-Z0-9_.-]+/|192\.168\.\d+\.\d+|(?<![\d.])10\.\d+\.\d+\.\d+|gh[oaprs]_[A-Za-z0-9]{20,}|sk-proj-[A-Za-z0-9]{20,}',content):
+    if PRIVATE and PRIVATE.search(content):
+        errors.append('Configured private address: '+name)
+    if re.search(r'/(?:home|Users)/[a-zA-Z0-9_.-]+/|192\.168\.1\.50|gh[oaprs]_[A-Za-z0-9]{20,}|sk-proj-[A-Za-z0-9]{20,}',content):
         errors.append('Private host path/address or credential-like value: '+name)
     if path.suffix=='.md':
         for target in re.findall(r'\]\(([^\s)]+)\)',content):

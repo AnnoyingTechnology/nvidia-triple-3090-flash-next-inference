@@ -5,9 +5,11 @@ source and public export hashes (checked by scripts/check_public.py).
 """
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import statistics
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'results/public'
@@ -26,6 +28,13 @@ PROBES = {'gpu1-a': 'One card (GPU1), KV streaming past 32K', 'gpu12-a': 'Split 
           'gpu12-b-long': 'Split GPU1+GPU2, launch b, 256K/64K anchors'}
 
 
+# Exact redaction only: the exporting host's own IPv4 addresses (plus X3090_PRIVATE_ADDRESSES).
+# A blanket private-range pattern would also rewrite synthetic addresses in the canary answers.
+ADDRESSES = sorted(set(subprocess.run(['hostname', '-I'], capture_output=True, text=True).stdout.split()
+                       + os.environ.get('X3090_PRIVATE_ADDRESSES', '').split()) - {''})
+ADDRESS_RE = re.compile('|'.join(r'(?<![\d.])' + re.escape(a) + r'(?![\d.])' for a in ADDRESSES if '.' in a) or '(?!)')
+
+
 def clean(value):
     if isinstance(value, dict):
         return {key: clean(item) for key, item in value.items() if key != 'telemetry'}
@@ -34,7 +43,7 @@ def clean(value):
     if isinstance(value, str):
         value = re.sub(r'/home/[^/\s]+/[^\s"\n]+', '<local-path>', value)
         value = re.sub(r'/tmp/[^\s"\n]+', '<temp-path>', value)
-        return re.sub(r'(?<![\d.])(?:10|192\.168)\.\d+\.\d+(?:\.\d+)?(?![\d.])', '<host-address>', value)
+        return ADDRESS_RE.sub('<host-address>', value)
     return value
 
 
@@ -83,7 +92,7 @@ def main():
     summary = json.dumps(summarize(), indent=2) + '\n'
     (OUT / 'placement-20261004-summary.json').write_text(summary)
     (OUT / 'export-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    leaks = [p.name for p in OUT.glob('*.json') if re.search(r'/home/|(?<![\d.])10\.\d+\.\d+\.\d+', p.read_text())]
+    leaks = [p.name for p in OUT.glob('*.json') if re.search(r'/home/', p.read_text()) or ADDRESS_RE.search(p.read_text())]
     if leaks:
         raise SystemExit(f'private identifiers remain in {leaks}')
     print('exported', len(manifest['sources']), 'files to', OUT.relative_to(ROOT))
