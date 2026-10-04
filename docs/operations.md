@@ -19,7 +19,7 @@ Allow about 105 GB of free disk for models, MTP sources, pack, build and virtual
 
 ```bash
 sudo bash scripts/install_services.sh         # renders systemd/*.service.in, daemon-reload, verify
-sudo systemctl enable qwen-3.8-27b.service    # boot default on this host
+sudo systemctl enable qwen3.8-flash-next.service   # boot default on this host
 ```
 
 `qwen3.8-flash-next.service` and `qwen-3.8-27b.service` declare `Conflicts=` on each other and an

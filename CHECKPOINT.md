@@ -4,9 +4,9 @@
 
 - Profile `x3090-iq3s-256k-gpu12-vision0`: two-stage layer split on GPU1+GPU2, resident vision on
   GPU0, GSQ IQ3_S, int8 KV in VRAM, MTP 4, low reasoning, 262,144 tokens, 225 W on every card.
-- Service `qwen3.8-flash-next.service` (installed from `systemd/`, disabled at boot), loopback
+- Service `qwen3.8-flash-next.service` (installed from `systemd/`, **enabled at boot**), loopback
   `127.0.0.1:19623`. It conflicts with `qwen-3.8-27b.service` (former `qwen-serving.service`,
-  LAN port 19622), which is **enabled at boot**. At this checkpoint Flash-Next is the running one.
+  LAN port 19622), which starts on demand. At this checkpoint Flash-Next is running.
 - Clients: SSH tunnel to local port 19624; OpenCode provider `ai-3090-flash-next/qwen3.8-flash-next`.
 
 ## Measured (details in docs/benchmarks-and-quality.md)

@@ -27,7 +27,7 @@ paths and fetches image URLs, so it is not published unauthenticated on the LAN.
 mutually exclusive with the host's
 [Qwen3.8-27B vLLM service](https://github.com/AnnoyingTechnology/nvidia-dual-3090-llm-inference)
 (`qwen-3.8-27b.service`, port 19622), which needs the same cards and RAM: starting either stops
-the other first. The 27B service remains the boot default.
+the other first. Flash-Next is the boot default; the 27B starts on demand.
 
 | Selected setting | Value |
 |---|---|
