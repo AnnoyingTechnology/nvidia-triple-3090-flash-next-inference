@@ -1,29 +1,37 @@
 # NVIDIA triple RTX 3090 Flash-Next inference
 
-This repository records the bounded qualification of **Qwen3.8-Flash-Next on three 24 GiB RTX
-3090 cards, an i7-6900K (8 cores, AVX2) and 94 GiB of usable DDR4**, using the target, workloads
-and acceptance rules of the frozen
-[single RTX 4090 campaign](https://github.com/AnnoyingTechnology/nvidia-4090-flash-next-inference)
-("Ulmus"). The selected two-stage layer split decodes **93.7-95.4 tok/s at 32K, 82.7-84.0 at
-128K and 77.6 at 256K**, reads cold prompts at **~2,550-3,200 tok/s**, and scores **29/30**
-executable DevOps canaries and **14/15** images at low reasoning, every answer completed naturally.
+This repository records **Qwen3.8-Flash-Next on three 24 GiB RTX 3090 cards,
+an i7-6900K (8 cores, AVX2) and 94 GiB usable DDR4**, at 225 W per card.
+The November update uses Strata 0.2.12, the frozen GSQ IQ3_S target, MTP4,
+int8 KV and the native 262,144-token server context.
 
-The owner's hypothesis - three cards keep the experts on GPUs and beat the 4090 - does not hold at
-the 225 W card policy. The split holds ~99% of the routed experts in VRAM, so the CPU and PCIe
-stop mattering, but each Ampere layer is slower than Ada's and a layer split adds no parallelism
-for one sequence: decode is **~22-26% below Ulmus** and cold prompt reads take **~1.4-1.8x** as
-long, at ~1.8x the board energy per token. This is documented rather than hidden.
+The [November update qualification](updates/2026-11-08/README.md) contains
+same-host before/after measurements, kernel ablations, quality checks and
+rollback instructions. The original October comparison with the
+[single RTX 4090 campaign](https://github.com/AnnoyingTechnology/nvidia-4090-flash-next-inference)
+is retained below as historical evidence; it is not a new comparison of the
+updated stacks.
 
 The result uses the GSQ IQ3_S target with its IQ4_NL n-gram table, verified MTP speculation (four
 draft tokens), int8 KV fully in VRAM, the BF16 vision encoder resident on its own card, the native
 262,144-token limit and pinned [Strata](https://github.com/Niko1221/Strata) built natively for SM86.
 All experts and the n-gram table stay in RAM (pinned / mlocked): there is no disk decode tier.
 
-## Result
+## Current runtime
+
+Build the isolated engine/API on the already-provisioned AVX2/SM86 host with
+`bash updates/2026-11-08/build-engine.sh`, using a 4 GiB/no-swap user cgroup
+and two build jobs as documented in the update. Install the qualified service
+drop-in with `sudo bash updates/2026-11-08/install-selected.sh`.
+The existing frozen model assets and resident vision helper are retained;
+older binaries remain available for rollback. The profile caps prefill chunks
+at 16K and explicitly keeps the previous prompt-attention path.
+
+## October 2026 reference (historical)
 
 `qwen3.8-flash-next.service` exposes model `Qwen3.8-Flash-Next` (alias `x3090`) on
-**`127.0.0.1:19623` only**. Remote clients use an SSH tunnel; Strata's server accepts image file
-paths and fetches image URLs, so it is not published unauthenticated on the LAN. The service is
+**`0.0.0.0:19623`** on the trusted LAN, matching the owner's deployed profile.
+An SSH tunnel remains usable. The API has no authentication. The service is
 mutually exclusive with the host's
 [Qwen3.8-27B vLLM service](https://github.com/AnnoyingTechnology/nvidia-dual-3090-llm-inference)
 (`qwen-3.8-27b.service`, port 19622), which needs the same cards and RAM: starting either stops
@@ -111,13 +119,11 @@ same `invoice` typing case as Ulmus.
 
 ## What might still be left
 
-1. LAN service exposure needs an API key and a server-side refusal of image file paths and
-   URLs before it is reasonable; until then clients use the SSH tunnel.
-2. Speculation retuning for a GPU-bound verify (window length versus acceptance) is the only
+1. Speculation retuning for a GPU-bound verify (window length versus acceptance) is the only
    untested software lever; the Ulmus short sweeps failed confirmation, so it needs a held-out deck.
-3. 96K and 192K speed, and a combined near-256K prompt with images, are not measured.
-4. Headless operation would free the desktop's VRAM and RAM on GPU0; cleanup, not a speed gain.
-5. Concurrent c2 execution is unqualified; requests queue FIFO.
+2. 96K and 192K speed, and a combined near-256K prompt with images, are not measured.
+3. Headless operation would free the desktop's VRAM and RAM on GPU0; cleanup, not a speed gain.
+4. Concurrent c2 execution is unqualified; requests queue FIFO.
 
 ## Quick operations
 
@@ -162,7 +168,7 @@ The vision encoder runs separately on GPU0:
 | `--pool-workers 7` | One worker per physical core but one, as on Ulmus (11 of 12) |
 | No `--kv-resident` | All KV in VRAM; host RAM is the scarce resource on this machine |
 | `LimitMEMLOCK=infinity`, `MemorySwapMax=0`, `MemoryMax=88G` | Pinned arena and mlocked table; nothing of the engine may swap |
-| `--port 19623`, loopback host | Unauthenticated API kept off the LAN |
+| `--port 19623`, host `0.0.0.0` | Owner-selected trusted-LAN API |
 
 ## Model and quality contract
 

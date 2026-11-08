@@ -1,9 +1,9 @@
 # Qwen3.8-Flash-Next on the 3x RTX 3090 host: pinned Strata, GSQ IQ3_S, two-stage layer split on
-# GPUs 1+2, resident BF16 vision on GPU 0, loopback API on 127.0.0.1:19623 (SSH tunnel for clients).
+# GPUs 1+2, resident BF16 vision on GPU 0, trusted-LAN API on 0.0.0.0:19623.
 # Mutually exclusive with the Qwen3.8-27B vLLM service, which needs the same GPUs and host RAM.
 # Rendered by scripts/install_services.sh (@ROOT@ = this checkout, @USER@ = its owner).
 [Unit]
-Description=Qwen3.8-Flash-Next (Strata, GPUs 1+2 split, vision GPU 0) on 127.0.0.1:19623
+Description=Qwen3.8-Flash-Next (Strata, GPUs 1+2 split, vision GPU 0) on 0.0.0.0:19623
 After=network-online.target nvidia-power-limit.service qwen-3.8-27b.service
 Wants=network-online.target nvidia-power-limit.service
 Conflicts=qwen-3.8-27b.service

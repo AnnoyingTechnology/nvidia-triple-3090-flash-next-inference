@@ -34,7 +34,9 @@ The 27B unit carries the former `qwen-serving.service` settings unchanged (renam
 
 ## Clients
 
-The Flash-Next API listens on `127.0.0.1:19623` only. A client keeps an SSH tunnel, for example a
+The Flash-Next API listens on `0.0.0.0:19623`; LAN clients use
+`http://<host-address>:19623/v1`. The owner selected this unauthenticated LAN profile.
+An existing SSH tunnel remains supported, for example a
 systemd user unit running `ssh -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=30
 -L 127.0.0.1:19624:127.0.0.1:19623 <user>@<host-address>` with `Restart=always`, and points an
 OpenAI-compatible provider at `http://127.0.0.1:19624/v1`. OpenCode entry (model `id` is the server's

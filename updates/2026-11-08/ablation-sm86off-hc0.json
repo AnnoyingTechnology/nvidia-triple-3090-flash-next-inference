@@ -1,0 +1,484 @@
+{
+  "observed_at": "2026-11-08T11:28:50.381153+00:00",
+  "order": [
+    32,
+    128,
+    128,
+    32,
+    32,
+    128
+  ],
+  "cold_prefix": "update-20261108",
+  "periodic_telemetry": false,
+  "sampling": {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0,
+    "presence_penalty": 0,
+    "repetition_penalty": 1,
+    "reasoning_effort": "low",
+    "seed": 42
+  },
+  "decode_tokens": 512,
+  "documents_sha256": {
+    "32": "c73c3d5f87937dec7e9b0afdd12fc8cb7911b6cd0e4d736a0195b58fb8469567",
+    "128": "22f55cfb5492c63423e5e26d7e06bd4f3e1a4b15d7ba9bfb864d3068313800fd"
+  },
+  "runtime": {
+    "fingerprint": "6b7bc97ec0a56655741db1ecc9195be6af7719a4644e85b26024b4b279986f72",
+    "identity": {
+      "image_id": {
+        "native": "56d1261159e629fb742ae365b260151a0c3d48aef380f8d1e3365b957c956d6d",
+        "vision": "fb1d356b9727db5b3ba71c13df52bdada803df9c38f99c703bff97515d558343"
+      },
+      "api_command": [
+        "<local-path>",
+        "-m",
+        "serve.server",
+        "--engine",
+        "strata",
+        "--config",
+        "<local-path>",
+        "--port",
+        "19623"
+      ],
+      "artifacts": {
+        "config_sha256": "b86c79aa8e874d68020497a60904a9bdbbc250c32b03711eafe984fdd2caa3a6",
+        "engine_config": {
+          "exe": "<local-path>",
+          "args": [
+            "--pack",
+            "<local-path>",
+            "--native",
+            "<local-path>",
+            "--expert-profile",
+            "<local-path>",
+            "--expert-cache",
+            "auto",
+            "--ple-io",
+            "ram",
+            "--prefill",
+            "auto:16384",
+            "--spec",
+            "4",
+            "--spec-min-p",
+            "0.7",
+            "--mtp",
+            "<local-path>",
+            "--max-context",
+            "262144",
+            "--kv",
+            "int8",
+            "--pool-workers",
+            "7",
+            "--stats",
+            "--vision",
+            "--adapt-swaps",
+            "24"
+          ],
+          "cwd": "<local-path>",
+          "gpu": [
+            1,
+            2
+          ],
+          "layer_split": "auto",
+          "tokenizer": "<local-path>",
+          "model_name": "Qwen3.8-Flash-Next",
+          "log": "<local-path>",
+          "host": "0.0.0.0",
+          "port": 19623,
+          "aliases": [
+            "x3090",
+            "ulmus"
+          ],
+          "vision": {
+            "exe": "<local-path>",
+            "mmproj": "<local-path>",
+            "model": "<local-path>",
+            "gpu": true,
+            "max_tokens": 4096,
+            "threads": 8,
+            "cuda_device": 0
+          },
+          "sampling": {
+            "temperature": 1,
+            "top_p": 0.95,
+            "top_k": 20,
+            "min_p": 0,
+            "presence_penalty": 0,
+            "repetition_penalty": 1
+          }
+        },
+        "native_sha256": "56d1261159e629fb742ae365b260151a0c3d48aef380f8d1e3365b957c956d6d",
+        "native_command": [
+          "<local-path>",
+          "--serve",
+          "--pack",
+          "<local-path>",
+          "--native",
+          "<local-path>",
+          "--expert-profile",
+          "<local-path>",
+          "--expert-cache",
+          "auto",
+          "--ple-io",
+          "ram",
+          "--prefill",
+          "auto:16384",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.7",
+          "--mtp",
+          "<local-path>",
+          "--max-context",
+          "262144",
+          "--kv",
+          "int8",
+          "--pool-workers",
+          "7",
+          "--stats",
+          "--vision",
+          "--adapt-swaps",
+          "24",
+          "--layer-split",
+          "auto"
+        ],
+        "api_sources": {
+          "server.py": "18c8303780c87908106156826876563c8e37e7fc7af805b390e55c38a1212685",
+          "frontend.py": "baa799433075a820e3aca8d42fcf31cab237f28d1e0487e50c8498af5f47b244",
+          "structured.py": "80b272499fe6264bb818c5bc68cece27cfb495c1279f236558641b67f56a5f5c"
+        },
+        "tokenizer": [
+          {
+            "path": "<local-path>",
+            "size": 9993,
+            "mtime_ns": 1791118652671141927,
+            "device": 66307,
+            "inode": 27936389,
+            "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+          },
+          {
+            "path": "<local-path>",
+            "size": 3353258,
+            "mtime_ns": 1791118652419139949,
+            "device": 66307,
+            "inode": 27936386,
+            "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+          },
+          {
+            "path": "<local-path>",
+            "size": 744960,
+            "mtime_ns": 1791118652431140043,
+            "device": 66307,
+            "inode": 27936387,
+            "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+          },
+          {
+            "path": "<local-path>",
+            "size": 541,
+            "mtime_ns": 1791118652431140043,
+            "device": 66307,
+            "inode": 27936388,
+            "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+          },
+          {
+            "path": "<local-path>",
+            "size": 5737005,
+            "mtime_ns": 1791118652323139194,
+            "device": 66307,
+            "inode": 27936385,
+            "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+          }
+        ],
+        "target_shards": [
+          {
+            "path": "<local-path>",
+            "size": 54817524224,
+            "mtime_ns": 1791118280160278520,
+            "device": 66307,
+            "inode": 27918703
+          },
+          {
+            "path": "<local-path>",
+            "size": 28800138432,
+            "mtime_ns": 1791117564582675851,
+            "device": 66307,
+            "inode": 27918705
+          }
+        ],
+        "pack": [
+          {
+            "path": "<local-path>",
+            "size": 306,
+            "mtime_ns": 1791118651579133352,
+            "device": 66307,
+            "inode": 27936379,
+            "sha256": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+          },
+          {
+            "path": "<local-path>",
+            "size": 1538035200,
+            "mtime_ns": 1791118651575133321,
+            "device": 66307,
+            "inode": 27936377
+          },
+          {
+            "path": "<local-path>",
+            "size": 93685,
+            "mtime_ns": 1791118651579133352,
+            "device": 66307,
+            "inode": 27936378,
+            "sha256": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac"
+          },
+          {
+            "path": "<local-path>",
+            "size": 3304,
+            "mtime_ns": 1791118652699142147,
+            "device": 66307,
+            "inode": 27936390,
+            "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+          },
+          {
+            "path": "<local-path>",
+            "size": 9993,
+            "mtime_ns": 1791118652671141927,
+            "device": 66307,
+            "inode": 27936389,
+            "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+          },
+          {
+            "path": "<local-path>",
+            "size": 3353258,
+            "mtime_ns": 1791118652419139949,
+            "device": 66307,
+            "inode": 27936386,
+            "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+          },
+          {
+            "path": "<local-path>",
+            "size": 744960,
+            "mtime_ns": 1791118652431140043,
+            "device": 66307,
+            "inode": 27936387,
+            "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+          },
+          {
+            "path": "<local-path>",
+            "size": 541,
+            "mtime_ns": 1791118652431140043,
+            "device": 66307,
+            "inode": 27936388,
+            "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+          },
+          {
+            "path": "<local-path>",
+            "size": 5737005,
+            "mtime_ns": 1791118652323139194,
+            "device": 66307,
+            "inode": 27936385,
+            "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+          }
+        ],
+        "mtp": [
+          {
+            "path": "<local-path>",
+            "size": 116099072,
+            "mtime_ns": 1791118098770949348,
+            "device": 66307,
+            "inode": 28049411
+          },
+          {
+            "path": "<local-path>",
+            "size": 1851,
+            "mtime_ns": 1791118098770949348,
+            "device": 66307,
+            "inode": 28049412,
+            "sha256": "991456cf4eb266eb8a888c349e548d11bc640f5dbd9149439aa9786af0f732fd"
+          },
+          {
+            "path": "<local-path>",
+            "size": 707788800,
+            "mtime_ns": 1791118097778942244,
+            "device": 66307,
+            "inode": 28049410
+          }
+        ],
+        "expert_profile": [
+          {
+            "path": "<local-path>",
+            "size": 196632,
+            "mtime_ns": 1791116951061261334,
+            "device": 66307,
+            "inode": 27918999,
+            "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+          }
+        ],
+        "vision_artifacts": {
+          "native_sha256": "fb1d356b9727db5b3ba71c13df52bdada803df9c38f99c703bff97515d558343",
+          "projector": {
+            "path": "<local-path>",
+            "size": 907543008,
+            "mtime_ns": 1791117661235506824,
+            "device": 66307,
+            "inode": 27936368
+          }
+        },
+        "shared_defaults_sha256": "337131b0c698d45b52a847330b504cfbc025cac9cf28fdc9b3ab6702073af2ed"
+      },
+      "api_properties": {
+        "default_generation_settings": {
+          "n_ctx": 262144,
+          "params": {
+            "temperature": 1.0,
+            "top_p": 0.95,
+            "top_k": 20,
+            "min_p": 0.0,
+            "presence_penalty": 0.0,
+            "repeat_penalty": 1.0,
+            "n_predict": 8192
+          }
+        },
+        "total_slots": 1,
+        "model_alias": "Qwen3.8-Flash-Next",
+        "model_path": "<local-path>",
+        "build_info": "Strata 0.1.58",
+        "modalities": {
+          "vision": true
+        }
+      },
+      "chat_template_sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "container_id": "systemd:qwen3.8-flash-next:c4174ba4ad37446ebff1bbe010f72b50",
+    "artifact_identity_policy": "Small files content-hashed; large files identified by observed inode/device/size/mtime. This is a run identity, not fresh verification of published weight hashes."
+  },
+  "cells": [
+    {
+      "context_k": 32,
+      "question": "List the main components this document describes and explain each one.",
+      "prompt_tokens": 31818,
+      "reused_tokens": 0,
+      "read_tokens": 31818,
+      "prompt_ms": 11964.9,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 110.6,
+      "draft_n": 386,
+      "host_min_available_gib": null,
+      "gpu_peak_mib": null,
+      "ttft_s": 12.073490591254085,
+      "draft_n_accepted": 309,
+      "median_power_w": null,
+      "output_sha256": "8373013176e8cefb9e4fd7434ff01efd9867c167b273f32d723c135aa5c0915b",
+      "energy_total_j": 6326.856999993324,
+      "energy_decode_j": 2035.155000001192,
+      "input_sha256": "d5de610d062564fa93eedb8291d7ea9ab384a212fe9865a2b6a6da09bd75267f"
+    },
+    {
+      "context_k": 128,
+      "question": "List the main components this document describes and explain each one.",
+      "prompt_tokens": 130123,
+      "reused_tokens": 0,
+      "read_tokens": 130123,
+      "prompt_ms": 35755.2,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 102.5,
+      "draft_n": 385,
+      "host_min_available_gib": null,
+      "gpu_peak_mib": null,
+      "ttft_s": 35.92653727019206,
+      "draft_n_accepted": 289,
+      "median_power_w": null,
+      "output_sha256": "0faa81f7bda6d13bd42b01f5eaaefd5cb1edce0c894941abb9997cb5e9930a4e",
+      "energy_total_j": 16925.108999997377,
+      "energy_decode_j": 2225.122999995947,
+      "input_sha256": "14f9ab4d07e5bb106e6d0636afd0b56d987679650eeb1517cd74e36820c0621a"
+    },
+    {
+      "context_k": 128,
+      "question": "Describe the structure of this document section by section.",
+      "prompt_tokens": 130121,
+      "reused_tokens": 114688,
+      "read_tokens": 15433,
+      "prompt_ms": 10523.3,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 103.8,
+      "draft_n": 407,
+      "host_min_available_gib": null,
+      "gpu_peak_mib": null,
+      "ttft_s": 10.65454824687913,
+      "draft_n_accepted": 301,
+      "median_power_w": null,
+      "output_sha256": "c419b6ffb7678b2c970a6808d30f4f23f87a4534b3d746d48e624c940f162554",
+      "energy_total_j": 5592.123999997973,
+      "energy_decode_j": 2183.5400000065565,
+      "input_sha256": "d3327462e9f8b05fea011dbfb00ec91b5dff0278e54fe762943d5ce7122232d1"
+    },
+    {
+      "context_k": 32,
+      "question": "Describe the structure of this document section by section.",
+      "prompt_tokens": 31816,
+      "reused_tokens": 16384,
+      "read_tokens": 15432,
+      "prompt_ms": 8964.5,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 112.7,
+      "draft_n": 364,
+      "host_min_available_gib": null,
+      "gpu_peak_mib": null,
+      "ttft_s": 9.011816744692624,
+      "draft_n_accepted": 301,
+      "median_power_w": null,
+      "output_sha256": "09cc41147c2c3a758bf607b3752cd890de8f3bcae2a5379dfbf70cb05690cd81",
+      "energy_total_j": 4972.968999996781,
+      "energy_decode_j": 2035.2489999979734,
+      "input_sha256": "be13d68c0e69c8dc59f3439cc2ddc870fd69c8a771c4c1f4d74a0e2880cbdcef"
+    },
+    {
+      "context_k": 32,
+      "question": "Explain what an operator should check first when following this document, and why.",
+      "prompt_tokens": 31821,
+      "reused_tokens": 16384,
+      "read_tokens": 15437,
+      "prompt_ms": 8330.2,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 113.1,
+      "draft_n": 358,
+      "host_min_available_gib": null,
+      "gpu_peak_mib": null,
+      "ttft_s": 8.379307153634727,
+      "draft_n_accepted": 300,
+      "median_power_w": null,
+      "output_sha256": "6117c37b24597dd0384130e510af0738806557b1d7baaeca1e07ca72ee3f1d45",
+      "energy_total_j": 4810.836000010371,
+      "energy_decode_j": 2017.2870000004768,
+      "input_sha256": "d884165085ab5509a61591a5df8eee9606b74b651a8d5dd8d5bc2c6f9d81d198"
+    },
+    {
+      "context_k": 128,
+      "question": "Explain what an operator should check first when following this document, and why.",
+      "prompt_tokens": 130126,
+      "reused_tokens": 114688,
+      "read_tokens": 15438,
+      "prompt_ms": 9558.1,
+      "completion_tokens": 512,
+      "finish_reason": "length",
+      "decode_tok_s": 98.1,
+      "draft_n": 391,
+      "host_min_available_gib": null,
+      "gpu_peak_mib": null,
+      "ttft_s": 9.69438247801736,
+      "draft_n_accepted": 277,
+      "median_power_w": null,
+      "output_sha256": "7f24de3791cb2fcb0ecd883ce0585b9794bbe5baa3c1dca1a6ec5d058d3c889f",
+      "energy_total_j": 5556.216000005603,
+      "energy_decode_j": 2326.2300000041723,
+      "input_sha256": "0c5090e4b7da7ae17bab8a2f58e05f95ad42253b085ebd8ac229821f86a876e9"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
-"""Measure streamed latency and engine timings; retain each run and GPU telemetry."""
+"""Measure streamed latency and engine timings without periodic polling by default."""
 import argparse
+from contextlib import nullcontext
+import ctypes
 import datetime
 import hashlib
 import json
@@ -48,13 +50,38 @@ class Telemetry:
         self.thread.join(6)
 
 
-def request(url, payload):
+def energy_snapshot():
+    """Read cumulative board-energy counters once; unsupported drivers return no value."""
+    try:
+        library = ctypes.CDLL('libnvidia-ml.so.1')
+        if library.nvmlInit_v2() != 0:
+            return None
+        count = ctypes.c_uint()
+        if library.nvmlDeviceGetCount_v2(ctypes.byref(count)) != 0:
+            return None
+        total = 0
+        for index in range(count.value):
+            device = ctypes.c_void_p()
+            value = ctypes.c_ulonglong()
+            if library.nvmlDeviceGetHandleByIndex_v2(index, ctypes.byref(device)) != 0:
+                return None
+            if library.nvmlDeviceGetTotalEnergyConsumption(device, ctypes.byref(value)) != 0:
+                return None
+            total += value.value
+        return total / 1000
+    except OSError:
+        return None
+
+
+def request(url, payload, telemetry=False):
     req = urllib.request.Request(url + '/v1/chat/completions', json.dumps(payload).encode(),
                                  {'Content-Type': 'application/json'})
     text, reasoning, calls, usage, timings = [], [], [], {}, {}
     first, done, finish = None, False, None
+    energy_start = energy_snapshot()
+    energy_first = None
     start = time.monotonic()
-    with Telemetry() as telemetry:
+    with Telemetry() if telemetry else nullcontext() as monitor:
         with urllib.request.urlopen(req, timeout=1200) as response:
             for raw in response:
                 if not raw.startswith(b'data: '):
@@ -71,23 +98,27 @@ def request(url, payload):
                     delta = choice.get('delta', {})
                     if first is None and any(delta.get(k) for k in ('content', 'reasoning_content', 'tool_calls')):
                         first = time.monotonic() - start
+                        energy_first = energy_snapshot()
                     text.append(delta.get('content') or '')
                     reasoning.append(delta.get('reasoning_content') or '')
                     calls.extend(delta.get('tool_calls') or [])
                 usage = item.get('usage') or usage
                 timings = item.get('timings') or timings
         end = time.monotonic()
+    energy_end = energy_snapshot()
     if not done or finish is None:
         raise RuntimeError('Incomplete SSE stream: missing completion boundary')
     result = {'ttft_s': first, 'total_s': end - start, 'usage': usage, 'timings': timings,
               'content': ''.join(text), 'reasoning': ''.join(reasoning), 'tool_deltas': calls,
               'finish_reason': finish,
-              'telemetry': telemetry.samples}
-    if telemetry.samples:
-        result['gpu_peak_mib'] = max(s['gpu_mib'] for s in telemetry.samples)
-        result['gpu_peak_temperature_c'] = max(s['temperature_c'] for s in telemetry.samples)
-        result['host_min_available_gib'] = min(s['mem_available_kib'] for s in telemetry.samples) / (1 << 20)
-        result['median_power_w'] = statistics.median(s['power_w'] for s in telemetry.samples)
+              'telemetry': monitor.samples if monitor else [],
+              'energy_total_j': energy_end - energy_start if energy_end is not None and energy_start is not None else None,
+              'energy_decode_j': energy_end - energy_first if energy_end is not None and energy_first is not None else None}
+    if monitor and monitor.samples:
+        result['gpu_peak_mib'] = max(s['gpu_mib'] for s in monitor.samples)
+        result['gpu_peak_temperature_c'] = max(s['temperature_c'] for s in monitor.samples)
+        result['host_min_available_gib'] = min(s['mem_available_kib'] for s in monitor.samples) / (1 << 20)
+        result['median_power_w'] = statistics.median(s['power_w'] for s in monitor.samples)
     return result
 
 

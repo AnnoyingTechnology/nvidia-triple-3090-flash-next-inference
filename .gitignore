@@ -39,3 +39,8 @@ __pycache__/
 .env
 *.part
 *.tmp
+
+# Public, redacted update qualification; private builds remain excluded.
+!/updates/
+/updates/*
+!/updates/2026-11-08/

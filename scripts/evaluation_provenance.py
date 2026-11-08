@@ -100,6 +100,15 @@ def capture_native(url):
         raise RuntimeError('Owned inference unit is not running')
     pid = unit['MainPID']
     command = Path(f'/proc/{pid}/cmdline').read_bytes().decode().split('\0')[:-1]
+    # Explicit numerical/performance overrides are part of the native run identity.
+    # Never record unrelated environment variables or API credentials.
+    safe_keys = {'STRATA_SM86_PERF', 'STRATA_HC_SPLIT', 'STRATA_ADAPT_FETCH',
+                 'STRATA_ROUTE_TAIL_SKIP', 'STRATA_PROMPT_ATTN_IMMA'}
+    explicit_env = {}
+    for item in Path(f'/proc/{pid}/environ').read_bytes().split(b'\0'):
+        key, sep, value = item.partition(b'=')
+        if sep and key.decode() in safe_keys:
+            explicit_env[key.decode()] = value.decode()
     config = command[command.index('--config') + 1]
     serve_dir = Path(os.readlink(f'/proc/{pid}/cwd')) / 'serve'
     probe = subprocess.run([sys.executable, '-', config, str(serve_dir)], input=PROBE, text=True,
@@ -109,7 +118,7 @@ def capture_native(url):
     artifacts = json.loads(probe.stdout)
     identity = {'image_id': {'native': artifacts['native_sha256'],
                              'vision': artifacts.get('vision_artifacts', {}).get('native_sha256')},
-                'api_command': command, 'artifacts': artifacts,
+                'api_command': command, 'artifacts': artifacts, 'native_environment': explicit_env,
                 'api_properties': {key: props.get(key) for key in ['default_generation_settings',
                     'total_slots', 'model_alias', 'model_path', 'build_info', 'modalities']},
                 'chat_template_sha256': hashlib.sha256(props['chat_template'].encode()).hexdigest()}

@@ -1,0 +1,79 @@
+{
+  "scope": "Maximum-budget resident-vision reliability, not vision quality or matched latency.",
+  "runtime_image_id": {
+    "native": "56d1261159e629fb742ae365b260151a0c3d48aef380f8d1e3365b957c956d6d",
+    "vision": "fb1d356b9727db5b3ba71c13df52bdada803df9c38f99c703bff97515d558343"
+  },
+  "image_pixels": [
+    2048,
+    2048
+  ],
+  "checks": [
+    {
+      "image_sha256": "fa950d4d3882baeed4103fc26a925f180a59a1eb248499b2a4eebf07c1f44cf6",
+      "input_sha256": "e8acdeab4dd021e6bf0407baaed0eb9848e259b30d39eab1429972a5ebe31545",
+      "cached": false,
+      "cached_tokens": 0,
+      "lend_done": 0,
+      "reclaim_done": 0,
+      "passed": true,
+      "finish_reason": "stop",
+      "content": "READY",
+      "usage": {
+        "prompt_tokens": 4147,
+        "completion_tokens": 38,
+        "total_tokens": 4185,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "ttft_s": 6.8982356153428555,
+      "total_s": 7.22412426630035,
+      "gpu_peak_mib": null
+    },
+    {
+      "image_sha256": "fa950d4d3882baeed4103fc26a925f180a59a1eb248499b2a4eebf07c1f44cf6",
+      "input_sha256": "e8acdeab4dd021e6bf0407baaed0eb9848e259b30d39eab1429972a5ebe31545",
+      "cached": true,
+      "cached_tokens": 4142,
+      "lend_done": 0,
+      "reclaim_done": 0,
+      "passed": true,
+      "finish_reason": "stop",
+      "content": "READY",
+      "usage": {
+        "prompt_tokens": 4147,
+        "completion_tokens": 38,
+        "total_tokens": 4185,
+        "prompt_tokens_details": {
+          "cached_tokens": 4142
+        }
+      },
+      "ttft_s": 0.15977501310408115,
+      "total_s": 0.45156579930335283,
+      "gpu_peak_mib": null
+    },
+    {
+      "image_sha256": "8a2063e8f4ec82756bd5ba9969e3205b1f6b714a2ccd50e941ad3aaed1316a3c",
+      "input_sha256": "83031bc523484a8bb20b8e8b0932fd40ef496888195c20983fb4dd6986ccbd5a",
+      "cached": false,
+      "cached_tokens": 0,
+      "lend_done": 0,
+      "reclaim_done": 0,
+      "passed": true,
+      "finish_reason": "stop",
+      "content": "READY",
+      "usage": {
+        "prompt_tokens": 4147,
+        "completion_tokens": 38,
+        "total_tokens": 4185,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "ttft_s": 6.9184176991693676,
+      "total_s": 7.227979234885424,
+      "gpu_peak_mib": null
+    }
+  ]
+}

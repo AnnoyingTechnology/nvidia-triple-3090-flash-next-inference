@@ -1,0 +1,15 @@
+# Selected Strata 0.2.12 engine/API; existing vision helper and frozen model assets.
+[Unit]
+Description=Qwen3.8-Flash-Next (Strata 0.2.12, GPUs 1+2, vision GPU 0) on trusted LAN port 19623
+
+[Service]
+WorkingDirectory=@ROOT@/updates/20261108/strata
+Environment=PATH=@ROOT@/updates/20261108/strata/.venv/bin:/usr/bin:/bin
+Environment=STRATA_ROUTE_TAIL_SKIP=0
+Environment=STRATA_PROMPT_ATTN_IMMA=0
+ExecStartPre=
+ExecStartPre=/usr/bin/python3 @ROOT@/scripts/x3090_runtime.py x3090-iq3s-256k-gpu12-vision0-0212-16k
+ExecStartPre=/usr/bin/python3 @ROOT@/launch_record.py x3090-iq3s-256k-gpu12-vision0-0212-16k native
+ExecStart=
+ExecStart=@ROOT@/updates/20261108/strata/.venv/bin/python -m serve.server --engine strata --config @ROOT@/results/runtime/x3090-iq3s-256k-gpu12-vision0-0212-16k.json --port 19623
+Restart=on-failure

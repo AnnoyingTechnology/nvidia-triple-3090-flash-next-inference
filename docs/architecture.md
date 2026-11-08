@@ -62,4 +62,4 @@ cgroup first read the file, so host-wide MemAvailable is the figure to watch.
 - One request at a time; further requests queue FIFO.
 - IQ3_S target, int8 KV and a Q2_0-expert draft: quality-relevant quantization boundaries.
 - Q4_K_XL does not fit: Strata pins every expert in host RAM (~103 GiB on Ulmus).
-- The API is unauthenticated and bound to loopback.
+- The API is unauthenticated and bound to the trusted LAN (`0.0.0.0`), as selected by the owner.

@@ -32,8 +32,9 @@ def render(name):
         cfg['vision'] = dict(cfg['vision'])
         for key in ('exe', 'mmproj', 'model'):
             cfg['vision'][key] = absolute(cfg['vision'][key])
-    if cfg.get('host') not in ('127.0.0.1', '::1'):
-        raise SystemExit('profiles for the 3x3090 host must listen on loopback only')
+    # Plain LAN access: non-loopback binds are allowed without an API key (the client reaches this
+    # box by IP, which Strata's Host check accepts). No DNS-rebinding allowance is added, so only
+    # this box's own name and LAN addresses are answered - same plain posture as the .205 host.
     out = ROOT / 'results' / 'runtime' / (name + '.json')
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(cfg, indent=2) + '\n')

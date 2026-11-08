@@ -31,7 +31,9 @@ record = {'observed_at': stamp.isoformat(), 'profile': name, 'profile_sha256': h
           'shared_defaults': json.loads(shared_path.read_text()) if shared_path.exists() else None,
           'shared_defaults_sha256': hashlib.sha256(shared_path.read_bytes()).hexdigest() if shared_path.exists() else None,
           'experimental_env': {k: os.environ[k] for k in
-              ['ULMUS_VERIFY_PROFILE', 'ULMUS_DECODE_TIMING', 'ULMUS_POOL_QUANT_THRESH'] if k in os.environ}}
+              ['ULMUS_VERIFY_PROFILE', 'ULMUS_DECODE_TIMING', 'ULMUS_POOL_QUANT_THRESH',
+               'STRATA_SM86_PERF', 'STRATA_HC_SPLIT', 'STRATA_ADAPT_FETCH',
+               'STRATA_ROUTE_TAIL_SKIP', 'STRATA_PROMPT_ATTN_IMMA'] if k in os.environ}}
 (root / 'results' / f'launch-{name}.json').write_text(json.dumps(record, indent=2))
 history = root / 'results' / 'launches'
 history.mkdir(exist_ok=True)

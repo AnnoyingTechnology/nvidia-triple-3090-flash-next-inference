@@ -33,12 +33,14 @@ def main():
                     help='Restrict the existing balanced order to these context sizes')
     ap.add_argument('--order', type=int, nargs='+', choices=[32, 64, 128, 256],
                     help='Explicit cell order (e.g. one cold 256K read, then cached-prefix questions)')
+    ap.add_argument('--cold-prefix', help='Fresh fixed namespace, shared by both A/B arms; isolates context sizes')
     args = ap.parse_args()
     if args.out.exists():
         raise SystemExit('Output exists; use a fresh label')
     order = args.order or [k for k in ORDER if args.context_k is None or k in args.context_k]
     documents = {k: Path(f'fixtures/document-{k}k.txt').read_text() for k in sorted(set(order))}
     report = {'observed_at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'order': order,
+              'cold_prefix': args.cold_prefix, 'periodic_telemetry': False,
               'sampling': SAMPLING, 'decode_tokens': args.decode_tokens,
               'documents_sha256': {k: hashlib.sha256(v.encode()).hexdigest() for k, v in documents.items()},
               'runtime': capture(args.url), 'cells': []}
@@ -46,7 +48,8 @@ def main():
     for size in order:
         question = QUESTIONS[asked[size] % len(QUESTIONS)]
         asked[size] += 1
-        payload = {'model': 'ulmus', 'messages': [{'role': 'user', 'content': documents[size] +
+        prefix = (args.cold_prefix + '-' + str(size) + 'K\n') if args.cold_prefix else ''
+        payload = {'model': 'ulmus', 'messages': [{'role': 'user', 'content': prefix + documents[size] +
                    '\n\nQuestion: ' + question + ' Answer in detail.'}], 'max_tokens': args.decode_tokens,
                    'stream': True, 'stream_options': {'include_usage': True}, **SAMPLING}
         assert_container(report['runtime'])
@@ -63,6 +66,8 @@ def main():
             'host_min_available_gib': result.get('host_min_available_gib'),
             'gpu_peak_mib': result.get('gpu_peak_mib'), 'ttft_s': result['ttft_s'],
             'draft_n_accepted': t['draft_n_accepted'], 'median_power_w': result.get('median_power_w'),
+            'output_sha256': hashlib.sha256((result['reasoning'] + '\n' + result['content']).encode()).hexdigest(),
+            'energy_total_j': result.get('energy_total_j'), 'energy_decode_j': result.get('energy_decode_j'),
             'input_sha256': hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest(),
             **({'routing_trace_bytes': [trace_before, trace_after]} if args.routing_trace else {})})
         args.out.write_text(json.dumps(report, indent=2))

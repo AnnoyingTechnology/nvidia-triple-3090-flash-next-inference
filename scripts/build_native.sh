@@ -7,11 +7,11 @@
 # The single-GPU lend-VRAM patch is deliberately NOT applied: it refuses multi-GPU operation.
 set -euo pipefail
 task_root=$(cd -- "$(dirname -- "$0")/.." && pwd)
-task_source="$task_root/upstream/strata"
-task_sha=99f3dbd0b21d1401b3769e0c0d963913607f380b
+task_source=${STRATA_SOURCE_ROOT:-$task_root/upstream/strata}
+task_sha=${STRATA_SOURCE_REV:-99f3dbd0b21d1401b3769e0c0d963913607f380b}
 task_llama=3cf03257f219afbe7334045ff7c6a06ac68c627d
 task_arch=${STRATA_CUDA_ARCH:-86}
-task_jobs=${STRATA_BUILD_JOBS:-$(nproc)}
+task_jobs=${STRATA_BUILD_JOBS:-2}
 task_build=${STRATA_BUILD_ROOT:-$task_root/build}
 export CC=gcc-13 CXX=g++-13 CUDAHOSTCXX=g++-13
 task_uv=${UV:-$(command -v uv || echo "$HOME/.local/bin/uv")}
@@ -48,6 +48,7 @@ export STRATA_GGUF_PY="$task_source/ref/llama.cpp/gguf-py"
 "$task_uv" pip install --requirement "$task_source/requirements.txt"
 "$task_uv" pip install --require-hashes --only-binary=:all: --requirement "$task_root/api-requirements.lock"
 
+command -v ninja >/dev/null || "$task_uv" pip install ninja==1.13.0
 cd "$task_source"
 cmake -S . -B "$task_build/strata" -G Ninja \
     -DCMAKE_BUILD_TYPE=Release -DSTRATA_ENABLE_CUDA=ON \
@@ -57,10 +58,13 @@ cmake -S . -B "$task_build/strata" -G Ninja \
 cmake --build "$task_build/strata" -j "$task_jobs" --target \
     strata strata-device ple_reader_test pinned_shared_test native_expert_parity \
     qsa_prompt_attn_parity conversation_cache_test conversation_memory_test
+if [[ ${STRATA_BUILD_VISION:-1} == 1 ]]; then
 cmake -S tools/vision -B "$task_build/vision" -G Ninja \
     -DCMAKE_BUILD_TYPE=Release -DLLAMA_DIR="$task_source/ref/llama.cpp" \
     -DSTRATA_VISION_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="$task_arch" -DCMAKE_CUDA_HOST_COMPILER=g++-13
 cmake --build "$task_build/vision" -j "$task_jobs" --target strata-vision
+fi
 cmake --build "$task_build/strata" -j 2 --target coupled_draft_test sampler_parity
 python -m unittest serve.test_structured
-sha256sum "$task_build/strata/strata" "$task_build/vision/bin/strata-vision" | tee "$task_root/results/build-native-sha256.txt"
+task_vision=${STRATA_VISION_EXE:-$task_build/vision/bin/strata-vision}
+sha256sum "$task_build/strata/strata" "$task_vision" | tee "${STRATA_BUILD_RECORD:-$task_root/results/build-native-sha256.txt}"

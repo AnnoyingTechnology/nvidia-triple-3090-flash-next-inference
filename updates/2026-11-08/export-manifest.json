@@ -1,0 +1,69 @@
+{
+  "method": "Explicit report allowlist; redact host paths/addresses and per-sample telemetry. Original hashes identify the private evidence.",
+  "sources": {
+    "baseline.json": {
+      "private_sha256": "74f8f02e57f3e1078812b677d4fcfecc16c51284a4e57ba912bf4a3ebe438a9a",
+      "public_sha256": "ce0869f5f6a89399088539bc86938007de6338f8a372cfa7a6d638f731e30694"
+    },
+    "stock-32k-chunks.json": {
+      "private_sha256": "3592f2b88ec40689ca36f6b65d0305c339d0eec2bcd2339840038eeed78ac658",
+      "public_sha256": "ae785eb07fc6d8004996d9f804f1731a28df057dc0e85b5f7bb7e46e2ce2e42e"
+    },
+    "default-attention-a.json": {
+      "private_sha256": "6be4842f509140a00770ef7a42b41bed447214bf3dea690cdc85e6d11b7997f7",
+      "public_sha256": "a697a8bfaec00ec13aa4222911669a6bacf2dfcf9361a3464ef30025ae44f7ef"
+    },
+    "default-attention-b.json": {
+      "private_sha256": "dc799d5462ad0b8f96d381201ebaa04be5da791de07bd0814e598c36ee531385",
+      "public_sha256": "506edba189f51313e0a843b9b30fa6aabead15583609d34cc8f8925c9823f014"
+    },
+    "selected.json": {
+      "private_sha256": "b109368ecbb4c1a2b483936aa992ec481e29233c054813305e04e099d030d5c2",
+      "public_sha256": "d045e31e2a636ec3605b136155efe20f7f51dbcb1a2a2b9d1e08c69ac0a77344"
+    },
+    "ablation-sm86off.json": {
+      "private_sha256": "10e868fdbc4be3449e90898801f4f340c6a2a8f8827993e2bd3071406e97a20c",
+      "public_sha256": "94265686e799062f7b7483fe2ba2d27f065cd1aa9c7eeb9f4f63bdeed3ea13cb"
+    },
+    "ablation-sm86off-hc0.json": {
+      "private_sha256": "81524c0a2cda86bb0174aa8afea87159f24b1a77d346cfdf30de9fa6ed572e5a",
+      "public_sha256": "289ab6dc7201629b4114228538da26e43c059f38b3362e87a17fb099a1aa776a"
+    },
+    "components.json": {
+      "private_sha256": "30697122b1a6110c35331afafd85c271930471c7c366ff6c2f2007fba2ac0650",
+      "public_sha256": "30697122b1a6110c35331afafd85c271930471c7c366ff6c2f2007fba2ac0650"
+    },
+    "code-default-attention.json": {
+      "private_sha256": "52d53e595a898232ab0ae451e38b277c3568826c755fd4f46892eff874bdc11e",
+      "public_sha256": "5df8f2284a852685bd0bf9e736abbbeed9ad86725eaabfa47422107ffa2a5aa2"
+    },
+    "code-selected.json": {
+      "private_sha256": "b132289bd500d46ababf753cfc4ec9246deed4c7b75ee1237d7813aa3ff29e8e",
+      "public_sha256": "ca3a101640d4a0cfa538c681293487b701c095390dce82d3ea4765f08ac97a2e"
+    },
+    "code-reference.json": {
+      "private_sha256": "afa24db1ad651fe9ffe59350938783b3dc98fe24f784e036fed36e1a05f6b61d",
+      "public_sha256": "974c8314d189e0217b568e208645180525d277516c8a066bd89a4deb95a0b7e8"
+    },
+    "vision-default-attention.json": {
+      "private_sha256": "536c2924865ff722122f48f6c2154e0dd68b1276f1b8b7000c7c943f334bd21a",
+      "public_sha256": "f2461ca64b44e94de8864d2fcad4b286685b715aabd8ff687be7b86b1ecd725c"
+    },
+    "vision-selected.json": {
+      "private_sha256": "bf3030b8da87f6ef33c182638ad4cbd4ad174d03c3a62d65d59807920ca58017",
+      "public_sha256": "356bab72b05216a0917d3671def959eacac078ae809c05d01ae92ba90bdfe87e"
+    },
+    "owner-api.json": {
+      "private_sha256": "82f2336415dab4272af957591a2870b7247691baec33fe51f8c31b7647d08b85",
+      "public_sha256": "34e9d32346dbd91760db876b43fe2c64eb08c25ef21c420fe706505d81d59fc0"
+    },
+    "context-256k.json": {
+      "private_sha256": "a33bb74ec8e5aec44dc52007679ca68981865199e2afe16bdf92eec2046c4cee",
+      "public_sha256": "148993cac0a7053cda240720c9afc14c48d8999f8a3fcf8ee60542a56f68d605"
+    },
+    "large-images.json": {
+      "private_sha256": "bb697a0bece945843bebb472d08fa3ff2798a4b524e0dac1aafa6e8736483a20",
+      "public_sha256": "bb697a0bece945843bebb472d08fa3ff2798a4b524e0dac1aafa6e8736483a20"
+    }
+  }
+}
